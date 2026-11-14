@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SharpForge — Lightweight .NET IDE for macOS</title>
+    <link rel="icon" type="image/png" href="./icon.png" />
+    <link rel="apple-touch-icon" href="./icon.png" />
+    <meta name="description" content="A lightweight macOS desktop .NET IDE for C# and .NET development with real Solution Explorer, Roslyn LSP, DAP debugger, test runner, and setup scripts." />
+    <meta property="og:title" content="SharpForge — Lightweight .NET IDE for macOS" />
+    <meta property="og:description" content="A lightweight macOS desktop .NET IDE for C# and .NET development with real Solution Explorer, Roslyn LSP, DAP debugger, test runner, and setup scripts." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      window.addEventListener('error', function(e) {
+        console.error('[SharpForge UI Error]', e.message, e.filename, e.lineno, e.error);
+        var root = document.getElementById('root');
+        if (root && (!root.children || root.children.length === 0)) {
+          root.innerHTML = '<div style="background:#1e1f22;color:#f87171;padding:24px;font-family:monospace;height:100vh;box-sizing:border-box;"><h3>SharpForge UI Initialization Error</h3><pre>' + (e.error ? e.error.stack : e.message) + '</pre><p style="color:#9ca3af;font-size:12px;">Detailed logs saved to ~/sharpforge-logs/error.log</p></div>';
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>
+

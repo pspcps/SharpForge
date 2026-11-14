@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/* Electron macOS hiddenInset drag regions */
+.sharpforge-drag-region {
+  -webkit-app-region: drag;
+}
+
+.sharpforge-no-drag,
+.sharpforge-no-drag * {
+  -webkit-app-region: no-drag;
+}
+
+/* SharpForge Monaco Editor Breakpoint & Paused Line Styling */
+.sharpforge-breakpoint-glyph {
+  background: #e51400;
+  border-radius: 50%;
+  width: 10px !important;
+  height: 10px !important;
+  margin-left: 5px;
+  margin-top: 5px;
+  box-shadow: 0 0 6px rgba(229, 20, 0, 0.8);
+  cursor: pointer;
+}
+
+.sharpforge-breakpoint-disabled-glyph {
+  border: 2px solid #9ca3af;
+  border-radius: 50%;
+  width: 10px !important;
+  height: 10px !important;
+  margin-left: 5px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.sharpforge-breakpoint-line {
+  background: rgba(229, 20, 0, 0.08) !important;
+}
+
+.sharpforge-paused-glyph {
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid #febc2e;
+  margin-left: 6px;
+  margin-top: 4px;
+}
+
+.sharpforge-paused-line {
+  background: rgba(254, 188, 46, 0.2) !important;
+  border-top: 1px solid rgba(254, 188, 46, 0.5);
+  border-bottom: 1px solid rgba(254, 188, 46, 0.5);
+}
+
+.squiggly-error {
+  text-decoration: underline wavy #f14c4c;
+}
+
+.squiggly-warning {
+  text-decoration: underline wavy #cca700;
+}
+
+/* macOS Dark Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1f22;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #393b40;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4e5157;
+}
+
+/* Ensure default Monaco context menu widget is hidden so only SharpForge menu shows */
+.context-view.monaco-menu-container {
+  display: none !important;
+}
+

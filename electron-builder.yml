@@ -1,0 +1,49 @@
+appId: org.sharpforge.ide
+productName: SharpForge
+copyright: Copyright © 2026 SharpForge Contributors
+
+directories:
+  output: dist
+  buildResources: resources
+
+mac:
+  category: public.app-category.developer-tools
+  icon: resources/icon.png
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  identity: null
+  target:
+    - target: default
+      arch:
+        - arm64
+        - x64
+  extendInfo:
+    CFBundleDocumentTypes:
+      - CFBundleTypeName: Visual Studio Solution
+        CFBundleTypeExtensions:
+          - sln
+          - slnx
+        CFBundleTypeRole: Editor
+        LSHandlerRank: Owner
+
+dmg:
+  title: SharpForge
+  icon: resources/icon.png
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+files:
+  - dist/**/*
+  - electron-main.cjs
+  - preload.cjs
+  - bin/netcoredbg/**/*
+  - resources/icon.png
+  - package.json
+
+asarUnpack:
+  - bin/netcoredbg/**/*
