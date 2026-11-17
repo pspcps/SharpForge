@@ -1,9 +1,9 @@
 appId: org.sharpforge.ide
-productName: SharpForge
+productName: Cairn IDE
 copyright: Copyright © 2026 SharpForge Contributors
 
 directories:
-  output: dist
+  output: release
   buildResources: resources
 
 mac:
@@ -27,7 +27,7 @@ mac:
         LSHandlerRank: Owner
 
 dmg:
-  title: SharpForge
+  title: Cairn IDE
   icon: resources/icon.png
   contents:
     - x: 130

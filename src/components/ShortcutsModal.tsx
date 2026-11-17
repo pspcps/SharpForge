@@ -44,7 +44,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
         <div className="h-11 bg-[#26282b] border-b border-[#2b2d30] px-4 flex items-center justify-between">
           <div className="flex items-center space-x-2 font-bold text-sm">
             <Keyboard className="w-4 h-4 text-purple-400" />
-            <span>SharpForge Keyboard Shortcuts</span>
+            <span>Cairn IDE Keyboard Shortcuts</span>
           </div>
           <button onClick={onClose} className="p-1 hover:bg-[#35373c] text-gray-400 hover:text-white rounded">
             <X className="w-4 h-4" />

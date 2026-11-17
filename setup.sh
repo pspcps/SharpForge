@@ -18,7 +18,7 @@ xcode-select -p >/dev/null 2>&1 || fail 'Install Xcode Command Line Tools: xcode
 xcrun --find clang >/dev/null 2>&1 || fail 'The Xcode C/C++ compiler is unavailable.'
 [[ -f package-lock.json ]] || fail 'package-lock.json is required for reproducible installation.'
 
-printf 'Building SharpForge for macOS %s\n' "$build_arch"
+printf 'Building Cairn IDE for macOS %s\n' "$build_arch"
 if command -v dotnet >/dev/null; then
   dotnet --version
 else
@@ -41,7 +41,7 @@ printf '[4/4] Packaging the unsigned application…\n'
 export CSC_IDENTITY_AUTO_DISCOVERY=false
 # Keep installers outside the UI dist directory, which Vite cleans on build.
 npm exec --offline -- electron-builder --mac "--$build_arch" -c.directories.output=release -c.mac.identity=null
-bundle="release/$bundle_dir/SharpForge.app"
+bundle="release/$bundle_dir/Cairn IDE.app"
 [[ -d "$bundle" ]] || fail "The packager did not produce $bundle"
 printf '\nBuilt: %s\nOpen with: open "%s"\n' "$bundle" "$bundle"
 printf 'DMG installers, if generated, are in release/. This local build is unsigned; public releases require signing and notarization.\n'

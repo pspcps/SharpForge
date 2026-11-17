@@ -1,5 +1,5 @@
 {
-  "name": "sharpforge",
+  "name": "cairn-ide",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -43,5 +43,6 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.21.0",
     "typescript": "^7.0.2"
-  }
+  },
+  "productName": "Cairn IDE"
 }

@@ -62,7 +62,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="h-11 bg-[#26282b] border-b border-[#2b2d30] px-4 flex items-center justify-between">
           <div className="flex items-center space-x-2 font-bold text-sm">
             <Settings className="w-4 h-4 text-slate-300" />
-            <span>SharpForge Settings</span>
+            <span>Cairn IDE Settings</span>
           </div>
           <button onClick={onClose} className="p-1 hover:bg-[#35373c] text-gray-400 hover:text-white rounded">
             <X className="w-4 h-4" />
@@ -129,7 +129,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onChange={e => setSelectedTheme(e.target.value as 'sharpforge-dark' | 'vs-dark-plus' | 'darcula')}
               className="w-full bg-[#18191c] text-white border border-[#393b40] rounded px-3 py-1.5 text-xs focus:outline-none cursor-pointer"
             >
-              <option value="sharpforge-dark">SharpForge Dark (Modern .NET UI)</option>
+              <option value="sharpforge-dark">Cairn IDE Dark (Modern .NET UI)</option>
               <option value="vs-dark-plus">Visual Studio Dark+</option>
               <option value="darcula">Darcula Classic</option>
             </select>

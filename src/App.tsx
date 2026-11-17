@@ -1,3 +1,4 @@
+import setupScript from '../setup.sh?raw';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { DeveloperWorkbench } from './components/DeveloperWorkbench';
 import { Toolbar } from './components/Toolbar';
@@ -418,7 +419,7 @@ export default function App() {
 
   // Logs
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    'Welcome to SharpForge — Enterprise C#/.NET IDE for macOS',
+    'Welcome to Cairn IDE — Enterprise C#/.NET IDE for macOS',
     'Supported .NET SDKs: .NET 10.0, .NET 9.0, .NET 8.0, .NET 7.0, .NET 6.0',
     'Loaded solution: ' + SAMPLE_SOLUTIONS[0].name + ' (' + SAMPLE_SOLUTIONS[0].projects.length + ' projects evaluated via MSBuild)',
     'Click "Open .sln" (⌘O) to load any enterprise .NET solution with full dependency & symbol resolution.'
@@ -869,7 +870,7 @@ export default function App() {
         }
       }
 
-      showNavToast('Desktop App Required', 'Reopening local .sln paths requires SharpForge.app');
+      showNavToast('Desktop App Required', 'Reopening local .sln paths requires Cairn IDE.app');
     },
     [handleLoadedSolution, showNavToast, solutions]
   );
@@ -980,7 +981,7 @@ export default function App() {
       handleLoadedSolution(parsed);
       setTerminalLogs(prev => [
         ...prev,
-        `[Browser Mode] Parsed ${file.name}. Use the "Folder" button in the toolbar to load all .cs & .csproj files in web preview, or launch SharpForge.app on macOS for full .NET SDK execution.`
+        `[Browser Mode] Parsed ${file.name}. Use the "Folder" button in the toolbar to load all .cs & .csproj files in web preview, or launch Cairn IDE.app on macOS for full .NET SDK execution.`
       ]);
       showNavToast('Browser Preview Limit', 'Click "Folder" button to load all .cs source files');
     } catch (err: any) {
@@ -1337,7 +1338,7 @@ export default function App() {
   const handleKillPortProcess = useCallback(
     async (options: { pid?: number; port?: number; force?: boolean }) => {
       if (!window.electronAPI?.portsKill) {
-        showNavToast('Desktop App Required', 'Killing OS port services requires SharpForge.app');
+        showNavToast('Desktop App Required', 'Killing OS port services requires Cairn IDE.app');
         return;
       }
       const res = await window.electronAPI.portsKill(options);
@@ -1505,9 +1506,9 @@ export default function App() {
         setRunningUrl(null);
         setTerminalLogs(prev => [
           ...prev,
-          `[Browser Mode] Cannot execute '${runTarget.name}' inside a web browser. Launch SharpForge.app on macOS (built via ./setup.sh) to run real .NET solutions.`
+          `[Browser Mode] Cannot execute '${runTarget.name}' inside a web browser. Launch Cairn IDE.app on macOS (built via ./setup.sh) to run real .NET solutions.`
         ]);
-        showNavToast('Desktop App Required', 'Run SharpForge.app to execute real .NET solutions');
+        showNavToast('Desktop App Required', 'Run Cairn IDE.app to execute real .NET solutions');
         return;
       }
 
@@ -1651,10 +1652,10 @@ export default function App() {
         setBottomPanelTab('debug');
         setIsBottomPanelOpen(true);
         setDebugLogs([
-          `[ERROR] Real .NET debugging requires the native SharpForge.app desktop runtime with .NET SDK and netcoredbg.`,
-          `Build SharpForge.app via './setup.sh' and open '${currentSolution.name}' inside the desktop app.`
+          `[ERROR] Real .NET debugging requires the native Cairn IDE.app desktop runtime with .NET SDK and netcoredbg.`,
+          `Build Cairn IDE.app via './setup.sh' and open '${currentSolution.name}' inside the desktop app.`
         ]);
-        showNavToast('Desktop App Required', 'Debug real .sln projects inside SharpForge.app');
+        showNavToast('Desktop App Required', 'Debug real .sln projects inside Cairn IDE.app');
         return;
       }
 
@@ -1839,7 +1840,7 @@ export default function App() {
         id: `ret-${Date.now()}`,
         functionName: 'UserService.GetUserById()',
         returnType: 'User',
-        value: '{ Id = 42, Email = "alice@sharpforge.dev", Role = "Admin" }',
+        value: '{ Id = 42, Email = "alice@example.invalid", Role = "Admin" }',
         file: userServiceFile?.path || 'UserService.cs',
         line: 23,
         timestamp: new Date().toLocaleTimeString()
@@ -1858,7 +1859,7 @@ export default function App() {
           scope: 'Locals',
           children: [
             { name: 'Id', value: '42', type: 'int' },
-            { name: 'Email', value: '"alice@sharpforge.dev"', type: 'string' },
+            { name: 'Email', value: '"alice@example.invalid"', type: 'string' },
             { name: 'Role', value: '"Admin"', type: 'string' }
           ]
         },
@@ -2246,7 +2247,7 @@ export default function App() {
       const displayName = shortType
         ? `${shortType} [Decompiled].cs`
         : `${payload.assemblyName} [Decompiled].cs`;
-      const banner = `// ============================================================================\n// Decompiled with SharpForge (.NET Engine: ${payload.engine})\n// Assembly: ${payload.assemblyName}\n// Path: ${payload.dllPath}\n${payload.typeName ? `// Type: ${payload.typeName}\n` : ''}// ============================================================================\n\n`;
+      const banner = `// ============================================================================\n// Decompiled with Cairn IDE (.NET Engine: ${payload.engine})\n// Assembly: ${payload.assemblyName}\n// Path: ${payload.dllPath}\n${payload.typeName ? `// Type: ${payload.typeName}\n` : ''}// ============================================================================\n\n`;
 
       const decompiledFile: SolutionFileItem = {
         id: `decompiled-${payload.dllPath}-${payload.typeName || 'assembly'}`,
@@ -2274,7 +2275,7 @@ export default function App() {
         openDecompiledSourceTab({
           assemblyName: pkg.id,
           dllPath: `/nuget/packages/${pkg.id.toLowerCase()}/${pkg.version}/lib/${project.targetFramework}/${pkg.id}.dll`,
-          source: `namespace ${pkg.id}\n{\n    // Open this solution inside SharpForge.app on macOS to decompile real NuGet .dll binaries via ilspycmd / MetadataLoadContext.\n    public static class AssemblyMetadata\n    {\n        public const string PackageId = "${pkg.id}";\n        public const string Version = "${pkg.resolvedVersion || pkg.version}";\n        public const string TargetFramework = "${project.targetFramework}";\n    }\n}\n`,
+          source: `namespace ${pkg.id}\n{\n    // Open this solution inside Cairn IDE.app on macOS to decompile real NuGet .dll binaries via ilspycmd / MetadataLoadContext.\n    public static class AssemblyMetadata\n    {\n        public const string PackageId = "${pkg.id}";\n        public const string Version = "${pkg.resolvedVersion || pkg.version}";\n        public const string TargetFramework = "${project.targetFramework}";\n    }\n}\n`,
           engine: 'browser-metadata'
         });
         return;
@@ -2299,7 +2300,7 @@ export default function App() {
   const handleDecompileDllPicker = useCallback(
     async (project: ProjectItem) => {
       if (!window.electronAPI?.decompilePickDll || !window.electronAPI?.decompileDll) {
-        showNavToast('Desktop App Required', 'Picking arbitrary .dll files requires SharpForge.app on macOS');
+        showNavToast('Desktop App Required', 'Picking arbitrary .dll files requires Cairn IDE.app on macOS');
         return;
       }
       const picked = await window.electronAPI.decompilePickDll();
@@ -2322,7 +2323,7 @@ export default function App() {
   const handleDecompileFrame = useCallback(
     async (frame: StackFrame) => {
       if (!window.electronAPI?.decompileDll) {
-        showNavToast('Desktop App Required', 'Stack frame .dll decompilation runs inside SharpForge.app');
+        showNavToast('Desktop App Required', 'Stack frame .dll decompilation runs inside Cairn IDE.app');
         return;
       }
       const typeCandidate = frame.name.split('(')[0].split('.').slice(-2, -1)[0];
@@ -3310,19 +3311,7 @@ export default function App() {
     isPaused
   ]);
 
-  const setupScriptSnippet = `#!/bin/bash
-set -e
-cd "$(dirname "$0")"
-npm install --legacy-peer-deps
-npm install --save-dev --legacy-peer-deps electron electron-builder
-rm -rf dist/mac* dist/*.dmg dist/*.app 2>/dev/null || true
-npm run build
-export CSC_IDENTITY_AUTO_DISCOVERY=false
-ARCH=$(uname -m)
-npx --yes electron-builder --mac --$ARCH -c.directories.output=dist -c.mac.identity=null
-cp -R dist/mac-$ARCH/SharpForge.app dist/SharpForge.app 2>/dev/null || cp -R dist/mac/SharpForge.app dist/SharpForge.app 2>/dev/null || true
-echo "Built dist/SharpForge.app"
-`;
+  const setupScriptSnippet = setupScript;
 
   const canNavigateBack = navIndex > 0;
   const canNavigateForward = navIndex >= 0 && navIndex < navHistory.length - 1;

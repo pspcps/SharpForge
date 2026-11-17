@@ -1,6 +1,6 @@
-# SharpForge — experimental C#/.NET IDE for macOS
+# Cairn IDE — experimental C#/.NET IDE for macOS
 
-SharpForge combines Monaco editing, solution browsing, .NET CLI build/run/test workflows and DAP debugging through Samsung netcoredbg. It is an independent project with no Microsoft, Samsung or JetBrains endorsement.
+Cairn IDE combines Monaco editing, solution browsing, .NET CLI build/run/test workflows and DAP debugging through Samsung netcoredbg. It is an independent project with no Microsoft, Samsung or JetBrains endorsement.
 
 ## Developer workbench
 
@@ -43,7 +43,7 @@ Requirements: Node.js 24 or newer, npm, and a .NET SDK compatible with your proj
 
 ```sh
 git clone https://github.com/pspcps/SharpForge.git
-cd SharpForge
+cd Cairn IDE
 npm ci
 npm test
 npm run lint
@@ -66,4 +66,4 @@ Configure an installed netcoredbg executable in settings. The existing download 
 
 Electron web security and sandboxing are enabled. Privileged IPC validates the app's main frame; execution operations require session trust. Navigation/new-window creation is blocked. Git add/commit/diff and background restore/build use argument arrays. File saves use a temporary sibling followed by rename. These are hardening measures, not a complete security audit.
 
-SharpForge original code is MIT licensed; see [LICENSE](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md). A complete packaged dependency/artwork audit, trademark clearance, signing and notarization remain release requirements. See [release checks](docs/RELEASE_CHECKS.md).
+Cairn IDE original code is MIT licensed; see [LICENSE](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md). A complete packaged dependency/artwork audit, trademark clearance, signing and notarization remain release requirements. See [release checks](docs/RELEASE_CHECKS.md).

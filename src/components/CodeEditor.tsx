@@ -250,7 +250,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     editorRef.current = editor;
     monacoRef.current = monaco;
 
-    // 1. SharpForge Dark (Default)
+    // 1. Cairn IDE Dark (Default)
     const sharpForgeDarkTheme = {
       base: 'vs-dark',
       inherit: true,
@@ -1318,8 +1318,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           />
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-3">
-            <img src="./icon.png" alt="SharpForge" className="w-12 h-12 rounded-2xl shadow-lg object-cover" />
-            <div className="text-sm font-medium text-slate-400">SharpForge C#/.NET IDE</div>
+            <img src="./icon.png" alt="Cairn IDE" className="w-12 h-12 rounded-2xl shadow-lg object-cover" />
+            <div className="text-sm font-medium text-slate-400">Cairn IDE C#/.NET IDE</div>
             <div className="text-xs text-slate-500 space-y-1 text-center font-mono">
               <p>⌘Click / Ctrl+Click — Go to Symbol</p>
               <p>⌥⌘B — Go to Implementation</p>
@@ -1548,7 +1548,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         )}
       </div>
 
-      {/* SharpForge Context Menu */}
+      {/* Cairn IDE Context Menu */}
       {contextMenuState && (
         <EditorContextMenu
           x={contextMenuState.x}
@@ -1671,12 +1671,12 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
                 onChangeEditorTheme(next);
               }}
               className="flex items-center space-x-1 hover:text-[#dfe1e5] transition"
-              title="Switch Editor Color Theme (SharpForge Dark / VS Dark+ / Darcula)"
+              title="Switch Editor Color Theme (Cairn IDE Dark / VS Dark+ / Darcula)"
             >
               <Palette className="w-3 h-3 text-sky-400" />
               <span className="font-sans">
                 {editorTheme === 'sharpforge-dark' || editorTheme === 'rider-dark'
-                  ? 'SharpForge Dark'
+                  ? 'Cairn IDE Dark'
                   : editorTheme === 'vs-dark-plus'
                   ? 'VS Dark+'
                   : 'Darcula'}

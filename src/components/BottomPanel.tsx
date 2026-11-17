@@ -70,7 +70,7 @@ export const BottomPanel: React.FC<BottomPanelProps> = ({
   onClose,
   activeTab,
   onSelectTab,
-  solutionName = 'SharpForge',
+  solutionName = 'Cairn IDE',
   workspaceDirectory,
   terminalLogs,
   buildLogs,
@@ -267,7 +267,7 @@ export const BottomPanel: React.FC<BottomPanelProps> = ({
           <div className="flex flex-col h-full bg-[#18191c] font-mono text-[11px] p-2">
             <div className="flex-1 overflow-y-auto space-y-0.5">
               <div className="text-gray-500 pb-1">
-                SharpForge Terminal ({solutionName}) · Type &apos;dotnet --help&apos; or any shell command
+                Cairn IDE Terminal ({solutionName}) · Type &apos;dotnet --help&apos; or any shell command
               </div>
               {terminalLogs.map((log, idx) => (
                 <div
