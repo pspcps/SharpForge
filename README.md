@@ -16,7 +16,7 @@ See the [complete tool guide](docs/ADVANCED_TOOLS.md) for individual workflows, 
 
 The desktop Terminal panel supports independent PTY sessions, keyboard input, ANSI output and resizing. Use **+ Terminal** to open another shell and **×** to terminate a session. Sessions remain alive when switching panel tabs or hiding the panel, and close when you quit the app. Browser preview retains the existing command-output panel.
 
-When a runnable `claude` executable is found in the app's PATH or common native install locations, the initial terminal opens Claude by default. Otherwise only a regular terminal opens; Claude controls stay hidden. This uses your local Claude installation and authentication; it does not install Claude, sign in or bypass its permission prompts. Shell aliases/functions are not detected. Native terminal dependencies are rebuilt for Electron during npm's postinstall step; macOS builds require Xcode Command Line Tools.
+The default terminal is a regular shell. When a runnable `claude` executable is found in the app's PATH or common native install locations, an **Open Claude** button appears; Claude starts only when you click it. When Claude is unavailable, its controls stay hidden. This uses your local Claude installation and authentication; it does not install Claude, sign in or bypass its permission prompts. Shell aliases/functions are not detected. Native terminal dependencies are rebuilt for Electron during npm's postinstall step; macOS builds require Xcode Command Line Tools.
 
 The toolbar wraps at narrower widths and sidebar badges cap at 99+ while retaining exact counts in their accessible labels. Monaco assets/workers are bundled locally so editor startup does not require a CDN.
 
