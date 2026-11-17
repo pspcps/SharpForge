@@ -39,7 +39,7 @@ The toolbar wraps at narrower widths and sidebar badges cap at 99+ while retaini
 
 ## Development
 
-Requirements: Node.js compatible with Vite 8, npm, and a .NET SDK compatible with your projects. macOS is required to verify packaged desktop behavior.
+Requirements: Node.js 24 or newer, npm, and a .NET SDK compatible with your projects. macOS is required to verify packaged desktop behavior.
 
 ```sh
 git clone https://github.com/pspcps/SharpForge.git
@@ -50,7 +50,7 @@ npm run lint
 npm run build
 ```
 
-For desktop development, start `npm run dev` in one terminal and `npm run electron:dev` in another. For local unsigned macOS packaging, run `./setup.sh`. The resulting app is in `dist`; the script does not automatically install it in Applications. Electron and packaging dependencies are pinned in package.json/package-lock.json. npm is the supported installation path.
+For desktop development, start `npm run dev` in one terminal and `npm run electron:dev` in another. For local unsigned macOS packaging, run `./setup.sh`. The resulting app and installers are in `release/`; the script does not automatically install it in Applications. Electron and packaging dependencies are pinned in package.json/package-lock.json. npm is the supported installation path.
 
 Configure an installed netcoredbg executable in settings. The existing download helpers are experimental: they still need digest verification and should not be treated as a verified supply chain. Local unsigned builds are not notarized public releases.
 
