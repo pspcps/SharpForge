@@ -14,7 +14,7 @@ Run `npm ci`, `npm test`, `npm run lint`, `npm run build` and `node --check elec
 - Save a task, reopen the workbench and restart the app; verify it remains scoped to the same workspace and never runs automatically.
 - Import an Open VSX theme; confirm unsupported extensions and broken downloads fail clearly.
 - Check editor workers, completion and clipboard with the new CSP/sandbox enabled. The development CSP may need separate configuration for Vite HMR.
-- With Claude absent, verify only a shell opens. With a working Claude CLI installed, verify Claude opens by default, authentication works and its permission prompts remain intact. Open two shells, type independently, resize, close one and verify the other stays running.
+- With Claude absent, verify only a shell opens. With a working Claude CLI installed, verify a regular shell opens by default and Claude starts only after clicking Open Claude; verify authentication works and its permission prompts remain intact. Open two shells, type independently, resize, close one and verify the other stays running.
 - Verify Apple Silicon and Intel packaging with the intended SDK/debugger versions.
 
 ## Not yet completed

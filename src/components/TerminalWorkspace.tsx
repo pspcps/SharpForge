@@ -125,21 +125,15 @@ export function TerminalWorkspace({ cwd }: { cwd: string }) {
       .then(async (result) => {
         if (!alive.current) return;
         setClaudeAvailable(result.claudeAvailable);
-        if (result.sessions.length) {
-          setSessions(result.sessions.map(replay));
-          setActive(
-            (
-              result.sessions.find((s) => s.kind === "claude" && !s.exited) ||
-              result.sessions[0]
-            ).id,
-          );
+        const existing = result.sessions.map(replay);
+        setSessions(existing);
+        const shell = existing.find(session => session.kind === 'shell' && !session.exited);
+        if (shell) {
+          setActive(shell.id);
         } else {
-          const created = await api.terminalCreate?.({
-            cwd,
-            kind: result.claudeAvailable ? "claude" : "shell",
-          });
+          const created = await api.terminalCreate?.({ cwd, kind: 'shell' });
           if (created && alive.current) {
-            setSessions([replay(created)]);
+            setSessions(previous => [...previous, replay(created)]);
             setActive(created.id);
           }
         }
