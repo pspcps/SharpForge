@@ -3411,6 +3411,7 @@ if (app) {
     logInfo('Electron App is ready.');
     registerIpcHandlers();
     require('./desktop/terminals.cjs').registerTerminals({ ipcMain, app, getWindow: () => mainWindow, getEnv: getEnhancedEnv });
+    require('./desktop/advanced.cjs').registerAdvanced({ ipcMain, app, dialog, safeStorage: require('electron').safeStorage, getWindow: () => mainWindow, getEnv: getEnhancedEnv });
     createWindow();
 
     app.on('activate', () => {

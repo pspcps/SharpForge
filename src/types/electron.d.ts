@@ -35,6 +35,8 @@ export interface DecompileDllResult {
 }
 
 export interface IElectronAPI {
+  advancedInvoke?: (area: string, action: string, options?: Record<string, unknown>) => Promise<any>;
+  onAdvancedEvent?: (channel: 'api:event' | 'logs:event', callback: (event: any) => void) => () => void;
   fileHistory?: (file: string) => Promise<{ timestamp: string; content: string }[]>;
   terminalList?: (cwd: string) => Promise<{ claudeAvailable: boolean; sessions: TerminalSession[] }>;
   terminalCreate?: (options: { cwd: string; kind: 'shell' | 'claude' }) => Promise<TerminalSession>;

@@ -27,8 +27,12 @@ Run `npm ci`, `npm test`, `npm run lint`, `npm run build` and `node --check elec
 - File-conflict detection and unsaved-buffer recovery across crashes.
 - Complete packaged dependency/theme/artwork license inventory and ownership verification; the notice file is a starting point, not legal clearance.
 - Signed, hardened, notarized macOS distribution and verified updates. Current packaging is for local unsigned testing.
-- Real-world performance benchmarks, accessibility testing and browser/macOS end-to-end tests.
+- Real-world performance benchmarks, accessibility review and native macOS/Electron end-to-end tests beyond the browser coverage.
 
 ## Further productivity roadmap
 
-After the above acceptance checks: solution-wide semantic refactors, test-impact selection, HTTP request collections with environment variables, watch-value diffs between debugger stops, exception-breakpoint controls, and cancellable build/test task pipelines. These need verified runtime support rather than UI-only compatibility claims.
+After the above acceptance checks: solution-wide semantic editor refactors, coverage-based per-test impact selection, OAuth/refresh workflows for API collections, watch-value diffs between debugger stops, exception-breakpoint controls, and cancellable build/test task pipelines. These need verified runtime support rather than UI-only compatibility claims.
+
+## Advanced-tools acceptance
+
+Run the separate browser and .NET integration checks described in ADVANCED_TOOLS.md. On macOS, verify secure token storage refuses insecure fallback, live log rotation works, Roslyn can load the intended SDK/configuration, C# colors remain distinct, and the workbench Close/Escape controls remain clickable around the native title bar.

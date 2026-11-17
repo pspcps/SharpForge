@@ -1,40 +1,18 @@
 # Feature implementation status
 
-The authorized scope includes the green and yellow categories. A category appearing below does not mean every item in its original list is implemented.
+The requested categories now have working tools rather than UI-only placeholders. Scope and operational limits are documented in [Advanced developer tools](ADVANCED_TOOLS.md).
 
-## Implemented in this increment
+| Category | Available workflows |
+| --- | --- |
+| 2. Solution intelligence | Interactive project/package/type/call dependency map, restored transitive packages, optional Roslyn compiler resolution, relationship inspector, cycles, interface implementations, unused-project candidates, health cards, architecture constraints, framework checks and unresolved-reference validation |
+| 6. API testing | REST, GraphQL, all four gRPC call types, WebSockets, session environments, named local collections, session request history/replay, response diffs/JSON viewer, timing statistics, encrypted named bearer tokens and collection assertions/cancellation |
+| 10. Log intelligence | Multiple named sources, structured/raw viewing, live file streams, filters/groups, exception groups, stack links, explicit correlation/request timelines, level colors, source comparison and redacted report export |
+| 13. Git intelligence | Commit graph, file/hunk staging, branch comparison, merge-side/resolution view, commit impact, file timeline, interactive rebase/continue/abort, merged-branch cleanup, connectivity health and stash snapshots |
+| 14. Testing/quality | Existing unified test explorer/project grouping plus real TRX runs/history/timing, Cobertura coverage/navigation, compiler/analyzer diagnostics, decision-count/duplicate-code candidates, format verification and conservative dependency-based test impact |
+| 15. Utilities | JSON, XML, YAML, isolated regex, JWT decoding, UTF-8 Base64, SHA-256, UUID, cron, Unix time, URL encoding, certificate metadata, port checks/listeners, process snapshots and folder-size analysis |
 
-| Category | Implemented slice | Limits |
-| --- | --- | --- |
-| 1. Code editor | Read-only text/file comparison and bounded local source-file history | History previews previous disk saves; no automatic rollback or unsaved-buffer recovery |
-| 2. Solution intelligence | Dependency map, incoming/outgoing references, strongly connected cycle groups, unresolved reference list | Uses loaded project model, not complete conditional MSBuild evaluation; no unused-code claim |
-| 8. Configuration intelligence | JSON key/value comparison, type changes, added/missing values, recognized secret-key masking in results | Local/pasted inputs; no production environment access or complete secret detection |
-| 10. Log intelligence | Search and level filters, structured JSON inspection, explicit trace/correlation filters | Retained run/debug output only; no inference across uninstrumented services |
-| 11. NuGet intelligence | Cross-project package declarations and differing version detection | No transitive resolution, vulnerability checks, compatibility verdict or legal clearance |
-| 15. Utilities | JSON formatting, UTF-8 Base64, URL encoding, SHA-256, UUID, Unix seconds to UTC, JWT decoding | JWT signature and claims are not verified |
+“Available” does not mean unlimited or infallible analysis. In particular, unused/dead-code/impact findings are bounded by their evidence; dynamic/reflection dependencies cannot be reconstructed reliably; signatures/tokens are not verified by decoding; external proto imports, arbitrary test scripts and OAuth flows are not provided. SDKs/collectors/OS credential services must be present for their respective native tools. Read the detailed guide before using history-changing or network operations.
 
-## Existing work retained
+Existing configuration comparisons, local source-file history, saved commands, multiple interactive terminals and conditional Claude support are retained. Full LSP-backed editor navigation/refactoring, automatic unsaved-buffer recovery and the other authorized roadmap categories remain separate work.
 
-The draft already includes grouped exception reports, clickable stack locations, saved workspace commands, common action shortcuts, multiple PTY terminals and conditional local Claude support.
-
-## Authorized follow-up work not yet implemented
-
-- Full LSP-backed navigation/refactors; bookmarks/snippets and automatic session recovery.
-- ASP.NET/EF read-only runtime/project explorers, migration script previews.
-- Multi-service orchestration with cancellation, dependency readiness and owned-process shutdown.
-- API collections with credential isolation and explicit target selection.
-- Debugger exception controls, thread/task views and watch comparisons.
-- NuGet transitive/advisory feeds and previews of upgrade restore/build/test results.
-- Docker inspection and permission-scoped operations.
-- Git graph, staging and protected change previews.
-- Coverage, static-analysis results and test-impact evidence.
-- Optional bounded runtime profiling and diagnostics capture.
-- Explicitly invoked task pipelines with cancellation and failure handling.
-
-## Excluded / postponed
-
-Do not implement the full database workbench (category 7), Windows/IIS management (16), or general plugin/extension execution platform (20) without a new scope decision. Existing theme-import behavior is retained, not expanded into a plugin platform.
-
-## Verification for this increment
-
-Automated tests cover reference/cycle analysis, configuration keys/types/secret field detection, structured log extraction, utility validation and UTF-8, and file-history deduplication/retention/config exclusion/symlink exclusion. Browser checks exercise each workbench section, configuration mask/reveal, successful and failed utility inputs, file diff disposal and empty history. Desktop/macOS history saving and packaged editor behavior still need acceptance testing on macOS.
+The full database workbench (7), Windows/IIS management (16), and general plugin execution platform (20) remain excluded as requested.

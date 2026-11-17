@@ -4,30 +4,13 @@ Cairn IDE combines Monaco editing, solution browsing, .NET CLI build/run/test wo
 
 ## Developer workbench
 
-Click **Developer workbench** in the bottom-right corner of the editor.
+Open **Developer workbench** from the editor to access an interactive dependency explorer and grouped tools for solution intelligence, API testing, logs, Git, testing/quality and local utilities.
 
-- Inspect managed exceptions captured from run/debug output, grouped by type, message and stack.
-- View inner exceptions, source locations and framework frames separately from investigation suggestions.
-- Click a source frame to open the file at the failing line.
-- Copy an exception report or inspect the original text. Review paths and secrets before sharing.
-- Jump straight to build, run, debug or rerun failed tests.
-- Save named commands per workspace for formatting, migrations, generation and other repetitive tasks. Commands run only on demand; they are stored locally, so do not save secrets.
+The explorer supports project, restored package, type/interface and method-call views with search, zoom/pan, minimap, impact tracing and source navigation. **Resolve with Roslyn** adds compiler-resolved source relationships and displays compilation/load diagnostics.
 
-Nonzero run exits open the workbench. If no managed stack is available, it reports the exit code without guessing a cause. DAP exception stops request exception details when the adapter supports them. React render failures display a recovery screen with details and a reload action.
+The API client supports REST, GraphQL, gRPC and WebSockets; logs combine named sources/live streams; Git provides staging, comparison, conflicts and rebase workflows; the quality center executes real .NET tooling and reads coverage. Saved commands, file history, configuration comparisons and exception inspection remain available.
 
-## Workspace tools
-
-The workbench also provides:
-
-- **Solution map:** directed references, incoming/outgoing reference lists, cycle groups and unresolved references from the loaded model.
-- **NuGet overview:** compare declared package versions across projects. Differences are review signals, not resolved dependency conflicts or vulnerability findings.
-- **Configuration:** compare JSON by key, including missing/added values and type changes. Recognized secret field names are hidden in results until explicitly revealed; this is not comprehensive secret detection. Inputs themselves remain visible while editing.
-- **File comparison:** read-only Monaco text diffs for pasted text or chosen local files, without overwriting either file.
-- **File history:** previews of previous desktop source-file saves, capped at 20 versions per file, 100 tracked files and 50 MB globally. Files over 256 KB and configuration-file extensions are excluded. History remains on disk and may contain sensitive source code; it is not a backup or crash recovery system.
-- **Logs:** search retained run/debug output by text, level and explicit trace/correlation ID; inspect original structured JSON.
-- **Utilities:** JSON validation/formatting, UTF-8 Base64, URL encoding, SHA-256, UUID generation, Unix timestamp conversion and unverified JWT inspection. Inputs are not persisted or uploaded.
-
-These are the first implemented slices of the larger feature roadmap; advanced runtime/profiling, service orchestration and integration work remains planned. See [feature status](docs/FEATURE_STATUS.md).
+See the [complete tool guide](docs/ADVANCED_TOOLS.md) for individual workflows, evidence limits, credential handling and required SDKs/collectors. [Feature status](docs/FEATURE_STATUS.md) distinguishes these tools from remaining roadmap work.
 
 ## Multiple terminals and Claude
 

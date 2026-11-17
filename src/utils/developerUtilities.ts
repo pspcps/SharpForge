@@ -1,3 +1,6 @@
+import { XMLParser, XMLBuilder, XMLValidator } from "fast-xml-parser";
+import { parseDocument } from "yaml";
+import { Cron } from "croner";
 export type UtilityAction =
   | "json"
   | "base64-encode"
@@ -7,7 +10,10 @@ export type UtilityAction =
   | "jwt"
   | "sha256"
   | "uuid"
-  | "timestamp";
+  | "timestamp"
+  | "xml"
+  | "yaml"
+  | "cron";
 export async function runUtility(
   action: UtilityAction,
   input: string,
@@ -15,6 +21,46 @@ export async function runUtility(
   if (input.length > 1_000_000)
     throw new Error("Use an input smaller than 1 MB");
   switch (action) {
+    case "xml": {
+      if (/<!DOCTYPE|<!ENTITY/i.test(input))
+        throw new Error("DTD/entity declarations are not supported");
+      const validation = XMLValidator.validate(input);
+      if (validation !== true) throw new Error(validation.err.msg);
+      const options = {
+        preserveOrder: true,
+        ignoreAttributes: false,
+        parseTagValue: false,
+        parseAttributeValue: false,
+        processEntities: false,
+      };
+      return new XMLBuilder({ ...options, format: true }).build(
+        new XMLParser(options).parse(input),
+      );
+    }
+    case "yaml": {
+      const document = parseDocument(input, { uniqueKeys: true });
+      if (document.errors.length)
+        throw new Error(
+          document.errors.map((error) => error.message).join("\n"),
+        );
+      document.toJS({ maxAliasCount: 50 });
+      return document.toString();
+    }
+    case "cron": {
+      const job = new Cron(input.trim(), { timezone: "UTC", paused: true });
+      try {
+        return JSON.stringify(
+          {
+            timezone: "UTC",
+            next: job.nextRuns(5).map((date) => date.toISOString()),
+          },
+          null,
+          2,
+        );
+      } finally {
+        job.stop();
+      }
+    }
     case "json":
       return JSON.stringify(JSON.parse(input), null, 2);
     case "base64-encode":
