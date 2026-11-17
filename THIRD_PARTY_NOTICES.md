@@ -29,3 +29,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Advanced tools dependencies
+
+The workbench additionally uses React Flow, Dagre, grpc-js, proto-loader, protobufjs, ws, YAML, fast-xml-parser and Croner. Their distributed licenses/notices must accompany redistributed code. The optional semantic helper restores Microsoft.Build.Locator and Microsoft.CodeAnalysis workspace packages from NuGet on the developer machine; retain their package licenses/notices when distributing compiled helper binaries. These additions do not replace the required packaged dependency inventory.

@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Editor, { OnMount, loader } from '@monaco-editor/react';
-import * as monacoEditor from 'monaco-editor/editor/editor.api.js';
+import * as monacoEditor from 'monaco-editor/editor/editor.main.js';
 import 'monaco-editor/basic-languages/monaco.contribution.js';
-import EditorWorker from 'monaco-editor/editor/editor.worker.js?worker';
+import EditorWorker from 'monaco-editor/editor/editor.worker.js?worker&inline';
 // Bundle editor assets locally: opening source files must work without a CDN.
 (self as any).MonacoEnvironment = { getWorker: () => new EditorWorker() };
 loader.config({ monaco: monacoEditor });
@@ -270,14 +270,14 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         { token: 'delimiter', foreground: 'BCBEC4' },
         { token: 'delimiter.curly', foreground: 'BCBEC4' },
         // Semantic token rules
-        { token: 'class', foreground: '6FAFBD' },
+        { token: 'class', foreground: '4EC9B0' },
         { token: 'interface', foreground: '78DCE8' },
-        { token: 'struct', foreground: '6FAFBD' },
+        { token: 'struct', foreground: '4EC9B0' },
         { token: 'enum', foreground: 'B5CEA8' },
-        { token: 'method', foreground: '56A8F5' },
+        { token: 'method', foreground: 'DCDCAA' },
         { token: 'field', foreground: 'C77DBB' },
-        { token: 'property', foreground: 'BCBEC4' },
-        { token: 'parameter', foreground: '9CDCFE' },
+        { token: 'property', foreground: '9CDCFE' },
+        { token: 'parameter', foreground: 'B4DCE8' },
         { token: 'variable', foreground: 'BCBEC4' },
         { token: 'namespace', foreground: 'A9B7C6' },
         { token: 'decorator', foreground: 'B3AE60' },
@@ -318,7 +318,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         { token: 'method', foreground: 'DCDCAA' },
         { token: 'field', foreground: '9CDCFE' },
         { token: 'property', foreground: 'D4D4D4' },
-        { token: 'parameter', foreground: '9CDCFE' },
+        { token: 'parameter', foreground: 'B4DCE8' },
         { token: 'variable', foreground: '9CDCFE' },
         { token: 'namespace', foreground: 'D4D4D4' },
         { token: 'decorator', foreground: 'D7BA7D' },
@@ -349,7 +349,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         { token: 'identifier', foreground: 'A9B7C6' },
         { token: 'class', foreground: 'A9B7C6', fontStyle: 'bold' },
         { token: 'interface', foreground: '70AEAB' },
-        { token: 'struct', foreground: '6FAFBD' },
+        { token: 'struct', foreground: '4EC9B0' },
         { token: 'enum', foreground: '9876AA' },
         { token: 'method', foreground: 'FFC66D' },
         { token: 'field', foreground: '9876AA' },

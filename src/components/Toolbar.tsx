@@ -145,14 +145,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
   return (
     <header
-      className={`sharpforge-drag-region min-h-11 py-1 gap-2 flex-wrap bg-[#2b2d30] border-b border-[#1e1f22] select-none flex items-center justify-between pr-3 text-[#dfe1e5] text-xs font-sans shrink-0 ${
+      className={`sharpforge-drag-region h-11 gap-2 flex-nowrap bg-[#2b2d30] border-b border-[#1e1f22] select-none flex items-center justify-between pr-3 text-[#dfe1e5] text-xs font-sans shrink-0 ${
         isElectron ? 'pl-[76px]' : 'pl-3'
       }`}
     >
       {/* Left: Navigation Arrows, Brand, Solution Picker & Open Button */}
-      <div className="sharpforge-no-drag flex items-center gap-2 min-w-0 flex-wrap">
+      <div className="sharpforge-no-drag flex items-center gap-2 min-w-0 flex-1">
         {/* Back and Forward Navigation Buttons */}
-        <div className="flex items-center space-x-0.5 bg-[#1e1f22] border border-[#393b40] rounded p-0.5">
+        <div className="hidden min-[1400px]:flex items-center space-x-0.5 bg-[#1e1f22] border border-[#393b40] rounded p-0.5">
           <button
             onClick={onNavigateBack}
             disabled={!canNavigateBack}
@@ -182,20 +182,20 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         {/* Cairn IDE Brand */}
         <div className="flex items-center space-x-1.5 pl-1 border-l border-[#393b40] shrink-0">
           <img src="./icon.png" alt="Cairn IDE" className="w-5 h-5 rounded object-cover" />
-          <span className="hidden sm:inline font-semibold tracking-tight text-[#dfe1e5] whitespace-nowrap">
+          <span className="hidden min-[1600px]:inline font-semibold tracking-tight text-[#dfe1e5] whitespace-nowrap">
             Cairn IDE
           </span>
         </div>
 
         {/* Solution dropdown */}
-        <div className="flex items-center gap-1 flex-wrap">
+        <div className="flex items-center gap-1 min-w-0">
           <select
             value={currentSolution.path}
             onChange={(e) => {
               const found = solutions.find(s => s.path === e.target.value);
               if (found) onSelectSolution(found);
             }}
-            className="bg-[#1e1f22] text-[#dfe1e5] border border-[#393b40] rounded px-2 py-1 text-xs focus:outline-none focus:border-[#3574f0] cursor-pointer max-w-[165px] truncate"
+            className="bg-[#1e1f22] text-[#dfe1e5] border border-[#393b40] rounded px-2 py-1 text-xs focus:outline-none focus:border-[#3574f0] cursor-pointer w-[110px] min-[1600px]:w-[165px] min-w-0 truncate"
             title={currentSolution.path}
           >
             {solutions.map(sol => (
@@ -211,7 +211,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             title="Open Solution .sln or .slnx (⌘O)"
           >
             <FolderOpen className="w-3.5 h-3.5 text-amber-400" />
-            <span className="font-medium">Open .sln</span>
+            <span className="hidden min-[1400px]:inline font-medium">Open .sln</span>
           </button>
 
           {onOpenFolder && (
@@ -221,7 +221,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               title="Open .NET Solution Folder (⌘⇧O)"
             >
               <FolderTree className="w-3.5 h-3.5 text-sky-400" />
-              <span className="hidden lg:inline font-medium">Folder</span>
+              <span className="hidden min-[2200px]:inline font-medium">Folder</span>
             </button>
           )}
 
@@ -340,7 +340,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </div>
 
         {/* .NET SDK Selector (.NET 10, 9, 8, 7, 6) */}
-        <div className="hidden xl:flex items-center space-x-1 bg-[#1e1f22] border border-[#393b40] rounded px-2 py-0.5 shrink-0">
+        <div className="hidden min-[2200px]:flex items-center space-x-1 bg-[#1e1f22] border border-[#393b40] rounded px-2 py-0.5 shrink-0">
           <Cpu className="w-3 h-3 text-sky-400" />
           <select
             value={activeSdk}
@@ -363,7 +363,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </div>
 
       {/* Center: Run/Debug Execution Widget */}
-      <div className="sharpforge-no-drag flex items-center gap-1.5 flex-wrap min-w-0 bg-[#232528] border border-[#393b40] rounded-md px-1.5 py-0.5">
+      <div className="sharpforge-no-drag flex items-center gap-1.5 shrink-0 min-w-0 bg-[#232528] border border-[#393b40] rounded-md px-1.5 py-0.5">
         {/* Startup Project Dropdown */}
         <select
           value={selectedProject?.name || ''}
@@ -371,7 +371,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             const proj = currentSolution.projects.find(p => p.name === e.target.value);
             if (proj) onSelectProject(proj);
           }}
-          className="bg-transparent text-[#dfe1e5] text-xs font-medium focus:outline-none cursor-pointer px-1 max-w-[190px] truncate"
+          className="bg-transparent text-[#dfe1e5] text-xs font-medium focus:outline-none cursor-pointer px-1 w-[120px] min-[1600px]:w-[175px] truncate"
           title="Startup Project"
         >
           {currentSolution.projects.map(p => (
@@ -441,7 +441,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
         {/* Run / Debug / Live Controls */}
         {isRunning || isDebugging ? (
-          <div className="flex items-center gap-1 flex-wrap">
+          <div className="flex items-center gap-1 min-w-0">
             {isDebugging && (
               <>
                 {isPaused ? (
@@ -509,7 +509,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             )}
           </div>
         ) : (
-          <div className="flex items-center gap-1 flex-wrap">
+          <div className="flex items-center gap-1 min-w-0">
             <button
               onClick={onRun}
               className="flex items-center space-x-1 px-2.5 py-1 hover:bg-[#369651]/25 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 rounded font-medium transition whitespace-nowrap shrink-0"
@@ -539,8 +539,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           title="Quick Open File (⌘P)"
         >
           <Search className="w-3.5 h-3.5" />
-          <span className="hidden lg:inline">Search Everywhere...</span>
-          <kbd className="hidden lg:inline bg-[#2b2d30] px-1 rounded text-[10px] text-gray-400 border border-[#393b40]">⌘P</kbd>
+          <span className="hidden min-[2200px]:inline">Search Everywhere...</span>
+          <kbd className="hidden min-[2200px]:inline bg-[#2b2d30] px-1 rounded text-[10px] text-gray-400 border border-[#393b40]">⌘P</kbd>
         </button>
 
         {onOpenExtensions && (

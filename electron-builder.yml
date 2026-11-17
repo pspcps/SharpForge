@@ -51,3 +51,10 @@ files:
 asarUnpack:
   - node_modules/node-pty/**/*
   - bin/netcoredbg/**/*
+
+extraResources:
+  - from: tools/semantic
+    to: semantic
+    filter:
+      - "*.cs"
+      - "*.csproj"

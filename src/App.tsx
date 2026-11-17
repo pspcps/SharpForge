@@ -1,6 +1,6 @@
 import setupScript from '../setup.sh?raw';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { DeveloperWorkbench } from './components/DeveloperWorkbench';
+const DeveloperWorkbench = React.lazy(() => import('./components/DeveloperWorkbench').then(module => ({ default: module.DeveloperWorkbench })));
 import { Toolbar } from './components/Toolbar';
 import { Sidebar, ActiveSidebarTab } from './components/Sidebar';
 import { SolutionExplorer } from './components/SolutionExplorer';
@@ -233,6 +233,7 @@ export default function App() {
   // Resizable IDE Layout & Editor Theme
   const [sidebarWidth, setSidebarWidth] = useState<number>(272);
   const outputFragments = useRef(new Map<string, string>());
+  const workbenchDismissedAt = useRef(0);
   const [workbenchOpen, setWorkbenchOpen] = useState(false);
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(256);
   const [editorTheme, setEditorTheme] = useState<EditorThemeId>('sharpforge-dark');
@@ -3048,7 +3049,7 @@ export default function App() {
           setIsRunning(false);
           setRunningUrl(null);
           setTerminalLogs(prev => [...prev, `[Process] Exited with code ${code}`]);
-          if (typeof code === 'number' && code !== 0) setWorkbenchOpen(true);
+          if (typeof code === 'number' && code !== 0 && Date.now()-workbenchDismissedAt.current>5000) setWorkbenchOpen(true);
           refreshActivePorts();
         })
       );
@@ -3078,7 +3079,7 @@ export default function App() {
               }
             }
           } else if (evt.event === 'stopped') {
-            if (evt.reason === 'exception') setWorkbenchOpen(true);
+            if (evt.reason === 'exception' && Date.now()-workbenchDismissedAt.current>5000) setWorkbenchOpen(true);
             setIsPaused(true);
             setIsDebugging(true);
             const frames: StackFrame[] = evt.stackFrames || [];
@@ -3328,7 +3329,7 @@ export default function App() {
       />
 
       <button className="absolute bottom-1 right-4 z-50 bg-[#34373d] text-blue-200 px-3 rounded" onClick={() => setWorkbenchOpen(true)}>Developer workbench</button>
-      {workbenchOpen && <DeveloperWorkbench key={currentSolution.path} workspace={currentSolution.path} solution={currentSolution} activeFile={activeFile || undefined} logs={[...terminalLogs.slice(-3000), ...debugLogs.slice(-3000)].join('\n')} onClose={() => setWorkbenchOpen(false)} onNavigate={(file, line) => openFileAtLocation(file, line, 1)} onBuild={handleBuild} onRun={() => handleRun()} onDebug={() => handleDebug()} onFailedTests={handleRunFailedTests} onCommand={handleExecuteTerminalCommand} />}
+      {workbenchOpen && <React.Suspense fallback={<div role="status" className="fixed inset-16 z-50 bg-slate-900 text-slate-200 p-8">Opening developer tools…</div>}><DeveloperWorkbench key={currentSolution.path} workspace={currentSolution.path} solution={currentSolution} activeFile={activeFile || undefined} logs={[...terminalLogs.slice(-3000), ...debugLogs.slice(-3000)].join('\n')} onClose={() => { workbenchDismissedAt.current=Date.now(); setWorkbenchOpen(false); }} onNavigate={(file, line) => openFileAtLocation(file, line, 1)} onBuild={handleBuild} onRun={() => handleRun()} onDebug={() => handleDebug()} onFailedTests={handleRunFailedTests} onCommand={handleExecuteTerminalCommand} /></React.Suspense>}
       {/* Top Application Toolbar */}
       <Toolbar
         solutions={solutions}

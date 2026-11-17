@@ -1,3 +1,4 @@
+import { UtilitiesExtras } from './UtilitiesExtras';
 import React, { useMemo, useState } from "react";
 import { ReadOnlyDiff } from "./ReadOnlyDiff";
 import type { SolutionFile } from "../types/minirider";
@@ -417,6 +418,9 @@ export function WorkspaceTools({
             >
               {[
                 ["json", "Format / validate JSON"],
+                ["xml", "Format / validate XML"],
+                ["yaml", "Validate YAML"],
+                ["cron", "Cron expression: next UTC runs"],
                 ["base64-encode", "Base64 encode (UTF-8)"],
                 ["base64-decode", "Base64 decode (UTF-8)"],
                 ["url-encode", "URL encode"],
@@ -450,6 +454,7 @@ export function WorkspaceTools({
               readOnly
             />
           </label>
+          <UtilitiesExtras />
         </>
       )}
       {tool === "logs" && (

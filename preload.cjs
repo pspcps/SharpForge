@@ -2,6 +2,13 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   isElectron: true,
+  advancedInvoke: (area, action, options) => ipcRenderer.invoke('advanced:invoke', area, action, options),
+  onAdvancedEvent: (channel, callback) => {
+    if (!['api:event','logs:event'].includes(channel)) throw new Error('Invalid event channel');
+    const handler = (_, event) => callback(event);
+    ipcRenderer.on(channel, handler);
+    return () => ipcRenderer.removeListener(channel, handler);
+  },
   fileHistory: file => ipcRenderer.invoke('history:list', file),
   terminalList: cwd => ipcRenderer.invoke('terminal:list', cwd),
   terminalCreate: options => ipcRenderer.invoke('terminal:create', options),
