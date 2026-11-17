@@ -145,12 +145,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
   return (
     <header
-      className={`sharpforge-drag-region h-11 bg-[#2b2d30] border-b border-[#1e1f22] select-none flex items-center justify-between pr-3 text-[#dfe1e5] text-xs font-sans shrink-0 ${
+      className={`sharpforge-drag-region min-h-11 py-1 gap-2 flex-wrap bg-[#2b2d30] border-b border-[#1e1f22] select-none flex items-center justify-between pr-3 text-[#dfe1e5] text-xs font-sans shrink-0 ${
         isElectron ? 'pl-[76px]' : 'pl-3'
       }`}
     >
       {/* Left: Navigation Arrows, Brand, Solution Picker & Open Button */}
-      <div className="sharpforge-no-drag flex items-center space-x-2 min-w-0">
+      <div className="sharpforge-no-drag flex items-center gap-2 min-w-0 flex-wrap">
         {/* Back and Forward Navigation Buttons */}
         <div className="flex items-center space-x-0.5 bg-[#1e1f22] border border-[#393b40] rounded p-0.5">
           <button
@@ -188,7 +188,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </div>
 
         {/* Solution dropdown */}
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center gap-1 flex-wrap">
           <select
             value={currentSolution.path}
             onChange={(e) => {
@@ -363,7 +363,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </div>
 
       {/* Center: Run/Debug Execution Widget */}
-      <div className="sharpforge-no-drag flex items-center space-x-1.5 bg-[#232528] border border-[#393b40] rounded-md px-1.5 py-0.5">
+      <div className="sharpforge-no-drag flex items-center gap-1.5 flex-wrap min-w-0 bg-[#232528] border border-[#393b40] rounded-md px-1.5 py-0.5">
         {/* Startup Project Dropdown */}
         <select
           value={selectedProject?.name || ''}
@@ -441,7 +441,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
         {/* Run / Debug / Live Controls */}
         {isRunning || isDebugging ? (
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center gap-1 flex-wrap">
             {isDebugging && (
               <>
                 {isPaused ? (
@@ -509,7 +509,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             )}
           </div>
         ) : (
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center gap-1 flex-wrap">
             <button
               onClick={onRun}
               className="flex items-center space-x-1 px-2.5 py-1 hover:bg-[#369651]/25 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 rounded font-medium transition whitespace-nowrap shrink-0"

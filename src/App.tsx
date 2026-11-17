@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { DeveloperWorkbench } from './components/DeveloperWorkbench';
 import { Toolbar } from './components/Toolbar';
 import { Sidebar, ActiveSidebarTab } from './components/Sidebar';
 import { SolutionExplorer } from './components/SolutionExplorer';
@@ -230,6 +231,8 @@ export default function App() {
 
   // Resizable IDE Layout & Editor Theme
   const [sidebarWidth, setSidebarWidth] = useState<number>(272);
+  const outputFragments = useRef(new Map<string, string>());
+  const [workbenchOpen, setWorkbenchOpen] = useState(false);
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(256);
   const [editorTheme, setEditorTheme] = useState<EditorThemeId>('sharpforge-dark');
 
@@ -915,7 +918,7 @@ export default function App() {
     try {
       const res = await window.electronAPI.restoreSolution(currentSolution.path);
       const lines = `${res.stdout}\n${res.stderr}`.split('\n').filter(Boolean);
-      setTerminalLogs(prev => [...prev, ...lines]);
+      setTerminalLogs(prev => [...prev, ...lines].slice(-5000));
       if (res.solution) {
         handleLoadedSolution(res.solution);
       }
@@ -2359,7 +2362,9 @@ export default function App() {
           showNavToast('Installed Extension', res.extension.displayName);
           return;
         }
+        throw new Error(res.error || 'Theme import failed');
       }
+      if (!ext.themes?.length) throw new Error('Browser preview supports bundled color themes only');
 
       const instRecord: MarketplaceExtension = { ...ext, installed: true, enabled: true };
       setInstalledExtensions(prev => {
@@ -2451,7 +2456,7 @@ export default function App() {
 
         const output = `${res.stdout}\n${res.stderr}`;
         const lines = output.split('\n').filter(Boolean);
-        setTerminalLogs(prev => [...prev, ...lines]);
+        setTerminalLogs(prev => [...prev, ...lines].slice(-5000));
 
         const parsedOutcomes = parseCombinedDotnetTestResults(
           res.trxContents,
@@ -2609,7 +2614,7 @@ export default function App() {
       setTerminalLogs(prev => [...prev, `\n> ${cmd}`]);
       const res = await window.electronAPI.runCommand(cmd, getSolutionDir(currentSolution.path));
       const lines = `${res.stdout}\n${res.stderr}`.split('\n').filter(Boolean);
-      setTerminalLogs(prev => [...prev, ...lines]);
+      setTerminalLogs(prev => [...prev, ...lines].slice(-5000));
       if (res.success && window.electronAPI.loadSolution) {
         const reloaded = await window.electronAPI.loadSolution(currentSolution.path);
         handleLoadedSolution(reloaded);
@@ -2633,7 +2638,7 @@ export default function App() {
       setTerminalLogs(prev => [...prev, `\n> ${cmd}`]);
       const res = await window.electronAPI.runCommand(cmd, getSolutionDir(currentSolution.path));
       const lines = `${res.stdout}\n${res.stderr}`.split('\n').filter(Boolean);
-      setTerminalLogs(prev => [...prev, ...lines]);
+      setTerminalLogs(prev => [...prev, ...lines].slice(-5000));
       if (res.success && window.electronAPI.loadSolution) {
         const reloaded = await window.electronAPI.loadSolution(currentSolution.path);
         handleLoadedSolution(reloaded);
@@ -3004,10 +3009,13 @@ export default function App() {
 
     if (api.onProcessOutput) {
       unsubscribers.push(
-        api.onProcessOutput(({ text }) => {
-          const lines = text.replace(/\r/g, '').split('\n').filter(Boolean);
+        api.onProcessOutput(({ processId, stream, text }) => {
+          const key = `${processId}:${stream}`;
+          const chunks = ((outputFragments.current.get(key) || '') + text).replace(/\r/g, '').split('\n');
+          outputFragments.current.set(key, chunks.pop()!.slice(-65536));
+          const lines = chunks.filter(Boolean);
           if (lines.length > 0) {
-            setTerminalLogs(prev => [...prev, ...lines]);
+            setTerminalLogs(prev => [...prev, ...lines].slice(-5000));
             for (const ln of lines) {
               const listenMatch = ln.match(/Now listening on:\s*(https?:\/\/[^\s]+)/i);
               if (listenMatch) {
@@ -3027,12 +3035,19 @@ export default function App() {
     if (api.onProcessExit) {
       unsubscribers.push(
         api.onProcessExit(({ processId, code }) => {
+          for (const stream of ['stdout', 'stderr']) {
+            const key = `${processId}:${stream}`;
+            const tail = outputFragments.current.get(key);
+            if (tail) setTerminalLogs(prev => [...prev, tail].slice(-5000));
+            outputFragments.current.delete(key);
+          }
           if (activeProcessIdRef.current === processId) {
             activeProcessIdRef.current = null;
           }
           setIsRunning(false);
           setRunningUrl(null);
           setTerminalLogs(prev => [...prev, `[Process] Exited with code ${code}`]);
+          if (typeof code === 'number' && code !== 0) setWorkbenchOpen(true);
           refreshActivePorts();
         })
       );
@@ -3043,9 +3058,12 @@ export default function App() {
         api.onDebugEvent(evt => {
           if (!evt) return;
           if (evt.event === 'output' && evt.output) {
-            const lines = String(evt.output).replace(/\r/g, '').split('\n').filter(Boolean);
+            const key = 'debug';
+            const chunks = ((outputFragments.current.get(key) || '') + String(evt.output)).replace(/\r/g, '').split('\n');
+            outputFragments.current.set(key, chunks.pop()!.slice(-65536));
+            const lines = chunks.filter(Boolean);
             if (lines.length > 0) {
-              setDebugLogs(prev => [...prev, ...lines]);
+              setDebugLogs(prev => [...prev, ...lines].slice(-5000));
               for (const ln of lines) {
                 const listenMatch = ln.match(/Now listening on:\s*(https?:\/\/[^\s]+)/i);
                 if (listenMatch) {
@@ -3059,6 +3077,7 @@ export default function App() {
               }
             }
           } else if (evt.event === 'stopped') {
+            if (evt.reason === 'exception') setWorkbenchOpen(true);
             setIsPaused(true);
             setIsDebugging(true);
             const frames: StackFrame[] = evt.stackFrames || [];
@@ -3130,6 +3149,9 @@ export default function App() {
             setIsPaused(false);
             setPausedLocation(null);
           } else if (evt.event === 'terminated' || evt.event === 'exited') {
+            const tail = outputFragments.current.get('debug');
+            if (tail) setDebugLogs(prev => [...prev, tail].slice(-5000));
+            outputFragments.current.delete('debug');
             setIsDebugging(false);
             setIsPaused(false);
             setPausedLocation(null);
@@ -3316,6 +3338,8 @@ echo "Built dist/SharpForge.app"
         onChange={handleBrowserFolderChange}
       />
 
+      <button className="absolute bottom-1 right-4 z-50 bg-[#34373d] text-blue-200 px-3 rounded" onClick={() => setWorkbenchOpen(true)}>Developer workbench</button>
+      {workbenchOpen && <DeveloperWorkbench key={currentSolution.path} workspace={currentSolution.path} solution={currentSolution} activeFile={activeFile || undefined} logs={[...terminalLogs.slice(-3000), ...debugLogs.slice(-3000)].join('\n')} onClose={() => setWorkbenchOpen(false)} onNavigate={(file, line) => openFileAtLocation(file, line, 1)} onBuild={handleBuild} onRun={() => handleRun()} onDebug={() => handleDebug()} onFailedTests={handleRunFailedTests} onCommand={handleExecuteTerminalCommand} />}
       {/* Top Application Toolbar */}
       <Toolbar
         solutions={solutions}
@@ -3699,6 +3723,7 @@ echo "Built dist/SharpForge.app"
                 activeTab={bottomPanelTab}
                 onSelectTab={setBottomPanelTab}
                 solutionName={currentSolution.name}
+                workspaceDirectory={isRealDiskSolution ? getSolutionDir(currentSolution.path) : undefined}
                 terminalLogs={terminalLogs}
                 buildLogs={buildLogs}
                 debugLogs={debugLogs}

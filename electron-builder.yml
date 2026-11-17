@@ -41,9 +41,13 @@ files:
   - dist/**/*
   - electron-main.cjs
   - preload.cjs
+  - desktop/**/*
+  - LICENSE
+  - THIRD_PARTY_NOTICES.md
   - bin/netcoredbg/**/*
   - resources/icon.png
   - package.json
 
 asarUnpack:
+  - node_modules/node-pty/**/*
   - bin/netcoredbg/**/*

@@ -76,11 +76,11 @@ fi
 
 echo ""
 echo "📦 [1/4] Installing project & runtime dependencies..."
-npm install --legacy-peer-deps
+npm ci
 
 echo ""
 echo "📦 [2/4] Ensuring Electron & Electron-Builder packaging tools are ready..."
-npm install --save-dev --legacy-peer-deps electron electron-builder
+npm exec electron -- --version
 
 echo ""
 echo "🧹 Cleaning previous build packages and cache..."

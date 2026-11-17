@@ -23,6 +23,7 @@ import {
   StackFrame
 } from '../types/minirider';
 import { ExecutionFlowGraph } from './ExecutionFlowGraph';
+import { TerminalWorkspace } from './TerminalWorkspace';
 import { PortsPanel } from './PortsPanel';
 
 interface BottomPanelProps {
@@ -31,6 +32,7 @@ interface BottomPanelProps {
   activeTab: 'terminal' | 'build' | 'debug' | 'flow' | 'ports' | 'problems' | 'references' | 'breakpoints';
   onSelectTab: (tab: 'terminal' | 'build' | 'debug' | 'flow' | 'ports' | 'problems' | 'references' | 'breakpoints') => void;
   solutionName?: string;
+  workspaceDirectory?: string;
   terminalLogs: string[];
   buildLogs: string[];
   debugLogs: string[];
@@ -69,6 +71,7 @@ export const BottomPanel: React.FC<BottomPanelProps> = ({
   activeTab,
   onSelectTab,
   solutionName = 'SharpForge',
+  workspaceDirectory,
   terminalLogs,
   buildLogs,
   debugLogs,
@@ -259,7 +262,8 @@ export const BottomPanel: React.FC<BottomPanelProps> = ({
       {/* Panel Contents */}
       <div className="flex-1 overflow-hidden relative flex flex-col">
         {/* Terminal Tab */}
-        {activeTab === 'terminal' && (
+        {window.electronAPI?.terminalList && workspaceDirectory && <div className={activeTab === 'terminal' ? 'h-full min-h-0' : 'hidden'}><TerminalWorkspace key={workspaceDirectory} cwd={workspaceDirectory} /></div>}
+        {activeTab === 'terminal' && !(window.electronAPI?.terminalList && workspaceDirectory) && (
           <div className="flex flex-col h-full bg-[#18191c] font-mono text-[11px] p-2">
             <div className="flex-1 overflow-y-auto space-y-0.5">
               <div className="text-gray-500 pb-1">

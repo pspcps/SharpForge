@@ -1,110 +1,69 @@
-# SharpForge — Lightweight C#/.NET IDE for macOS
+# SharpForge — experimental C#/.NET IDE for macOS
 
-SharpForge is a lightweight, open-source .NET IDE designed for everyday C# and .NET development on macOS without commercial license requirements or proprietary subscriptions.
+SharpForge combines Monaco editing, solution browsing, .NET CLI build/run/test workflows and DAP debugging through Samsung netcoredbg. It is an independent project with no Microsoft, Samsung or JetBrains endorsement.
 
-SharpForge lets you open existing `.sln` and `.slnx` solutions, evaluate project graphs, restore NuGet dependencies, build, run, debug via the Debug Adapter Protocol (DAP), execute xUnit / NUnit / MSTest suites, and navigate code with Roslyn-based language intelligence.
+## Developer workbench
 
----
+Click **Developer workbench** in the bottom-right corner of the editor.
 
-## Key Features
+- Inspect managed exceptions captured from run/debug output, grouped by type, message and stack.
+- View inner exceptions, source locations and framework frames separately from investigation suggestions.
+- Click a source frame to open the file at the failing line.
+- Copy an exception report or inspect the original text. Review paths and secrets before sharing.
+- Jump straight to build, run, debug or rerun failed tests.
+- Save named commands per workspace for formatting, migrations, generation and other repetitive tasks. Commands run only on demand; they are stored locally, so do not save secrets.
 
-- **Solution Explorer (.sln & .slnx)**: Full support for both classic Visual Studio format and modern .NET 9 XML-based `.slnx` solutions. Displays project trees, target frameworks, frameworks, and NuGet package references.
-- **Auto Setup & SDK Detection**: Detects installed .NET 8 / 9 / 10 SDKs via `dotnet --list-sdks`, evaluates `global.json`, and restores NuGet dependencies automatically.
-- **Monaco Code Editor**: Pro C# editing experience with semantic syntax highlighting, gutter breakpoints, diagnostics squigglies, and autocomplete.
-- **Real DAP Debugger (netcoredbg)**: Connected to Samsung's open-source, MIT-licensed `netcoredbg` debugger for CoreCLR. Strictly avoids Microsoft proprietary debugger binaries (`vsdbg`) that carry commercial redistribution restrictions.
-  - Breakpoints (toggle with `F9`, source & conditional breakpoints)
-  - Stepping: Continue (`F5`), Step Over (`F10`), Step Into (`F11`), Step Out (`Shift+F11`), Stop (`Shift+F5`)
-  - Variables & Locals inspection with hierarchical object graphs
-  - Watch expressions & Debug Console REPL
-  - Call Stack navigation
-- **Unit Test Explorer**: Discovers and runs tests across solution projects using `dotnet test`. Filter by status or test name, inspect execution durations, view assertions, and debug individual test methods.
-- **Roslyn Language Services**: Go to Definition (`F12` / `Cmd+Click`), Find All References / Usages (`Shift+F12`), hover tooltips, and real-time compile diagnostics.
-- **macOS Native Integration**:
-  - Finder integration (`Reveal in Finder`, double-click solution to open in SharpForge)
-  - Window styling matching macOS Sonoma & Sequoia guidelines
-  - Quick Open (`Cmd+P`) for instantaneous fuzzy file navigation
-  - Packaged as a native `.app` bundle for Apple Silicon (`arm64`) and Intel (`x64`) Macs.
-- **NuGet Package Manager**: Search and manage dependencies directly in the IDE with automatic `.csproj` editing and restore execution.
-- **Integrated Terminal**: Built-in shell supporting `dotnet`, `git`, and shell commands.
+Nonzero run exits open the workbench. If no managed stack is available, it reports the exit code without guessing a cause. DAP exception stops request exception details when the adapter supports them. React render failures display a recovery screen with details and a reload action.
 
----
+## Workspace tools
 
-## macOS Quickstart & Automated Installation
+The workbench also provides:
 
-To set up, build, and package SharpForge into your `/Applications` directory, clone the repository and run the setup script:
+- **Solution map:** directed references, incoming/outgoing reference lists, cycle groups and unresolved references from the loaded model.
+- **NuGet overview:** compare declared package versions across projects. Differences are review signals, not resolved dependency conflicts or vulnerability findings.
+- **Configuration:** compare JSON by key, including missing/added values and type changes. Recognized secret field names are hidden in results until explicitly revealed; this is not comprehensive secret detection. Inputs themselves remain visible while editing.
+- **File comparison:** read-only Monaco text diffs for pasted text or chosen local files, without overwriting either file.
+- **File history:** previews of previous desktop source-file saves, capped at 20 versions per file, 100 tracked files and 50 MB globally. Files over 256 KB and configuration-file extensions are excluded. History remains on disk and may contain sensitive source code; it is not a backup or crash recovery system.
+- **Logs:** search retained run/debug output by text, level and explicit trace/correlation ID; inspect original structured JSON.
+- **Utilities:** JSON validation/formatting, UTF-8 Base64, URL encoding, SHA-256, UUID generation, Unix timestamp conversion and unverified JWT inspection. Inputs are not persisted or uploaded.
 
-```bash
-git clone <repository-url>
-cd sharpforge
-chmod +x setup.sh
-./setup.sh
+These are the first implemented slices of the larger feature roadmap; advanced runtime/profiling, service orchestration and integration work remains planned. See [feature status](docs/FEATURE_STATUS.md).
+
+## Multiple terminals and Claude
+
+The desktop Terminal panel supports independent PTY sessions, keyboard input, ANSI output and resizing. Use **+ Terminal** to open another shell and **×** to terminate a session. Sessions remain alive when switching panel tabs or hiding the panel, and close when you quit the app. Browser preview retains the existing command-output panel.
+
+When a runnable `claude` executable is found in the app's PATH or common native install locations, the initial terminal opens Claude by default. Otherwise only a regular terminal opens; Claude controls stay hidden. This uses your local Claude installation and authentication; it does not install Claude, sign in or bypass its permission prompts. Shell aliases/functions are not detected. Native terminal dependencies are rebuilt for Electron during npm's postinstall step; macOS builds require Xcode Command Line Tools.
+
+The toolbar wraps at narrower widths and sidebar badges cap at 99+ while retaining exact counts in their accessible labels. Monaco assets/workers are bundled locally so editor startup does not require a CDN.
+
+## Development
+
+Requirements: Node.js compatible with Vite 8, npm, and a .NET SDK compatible with your projects. macOS is required to verify packaged desktop behavior.
+
+```sh
+git clone https://github.com/pspcps/SharpForge.git
+cd SharpForge
+npm ci
+npm test
+npm run lint
+npm run build
 ```
 
-### What `setup.sh` does automatically:
-1. Detects macOS and architecture: **Apple Silicon (`arm64`)** vs **Intel (`x64`)**.
-2. Checks for Xcode Command Line Tools, Node.js 18+, npm, Git, and .NET SDK.
-3. Automatically offers to install missing requirements via Homebrew.
-4. Downloads or links the MIT-licensed open-source **`netcoredbg`** binary for your Mac's architecture.
-5. Runs `npm install` and compiles the Electron and React codebase.
-6. Packages the application bundle into `dist/SharpForge.app` using `electron-builder`.
-7. Installs `SharpForge.app` to `/Applications` or `~/Applications`.
-8. Launches SharpForge ready for development.
+For desktop development, start `npm run dev` in one terminal and `npm run electron:dev` in another. For local unsigned macOS packaging, run `./setup.sh`. The resulting app is in `dist`; the script does not automatically install it in Applications. Electron and packaging dependencies are pinned in package.json/package-lock.json. npm is the supported installation path.
 
----
+Configure an installed netcoredbg executable in settings. The existing download helpers are experimental: they still need digest verification and should not be treated as a verified supply chain. Local unsigned builds are not notarized public releases.
 
-## Architecture Overview
+## Current capabilities and limits
 
-```
-                      ┌────────────────────────────────────────┐
-                      │         SharpForge macOS App           │
-                      │  Electron + React + Monaco Editor      │
-                      └──────────────────┬─────────────────────┘
-                                         │
-                 ┌───────────────────────┼────────────────────────┐
-                 ▼                       ▼                        ▼
-      ┌──────────────────────┐ ┌───────────────────┐    ┌──────────────────┐
-      │   Solution Manager   │ │  Roslyn LSP Client│    │    DAP Client    │
-      │   .sln / .slnx       │ │  csharp-ls / Roslyn│   │    netcoredbg    │
-      │   MSBuild evaluation │ │  LSP JSON-RPC     │    │    (MIT License) │
-      └──────────┬───────────┘ └─────────┬─────────┘    └─────────┬────────┘
-                 │                       │                        │
-                 ▼                       ▼                        ▼
-      ┌──────────────────────┐ ┌───────────────────┐    ┌──────────────────┐
-      │      dotnet CLI      │ │     C# Source     │    │ Target Assembly  │
-      │  build/restore/test  │ │     Files         │    │ CoreCLR Runtime  │
-      └──────────────────────┘ └───────────────────┘    └──────────────────┘
-```
+- Solution browsing for `.sln`/`.slnx`, NuGet operations, build/run/test commands and source navigation.
+- DAP debugging, breakpoints, locals, expressions and call-stack inspection, subject to adapter/platform support.
+- The active editor uses custom C# navigation/completion providers. The separate TypeScript language-server manager is not connected to the active Electron runtime; complete Roslyn LSP integration remains planned.
+- Open VSX **color theme imports** are supported. General VS Code extensions and JetBrains plugins do not execute. Unsupported packages and failed theme imports must not report successful installation.
+- The terminal executes shell commands intentionally. Only trust code and commands you understand. Builds, restores and tests can execute project code.
 
----
+## Security and licensing
 
-## Debugger Licensing & Compliance
+Electron web security and sandboxing are enabled. Privileged IPC validates the app's main frame; execution operations require session trust. Navigation/new-window creation is blocked. Git add/commit/diff and background restore/build use argument arrays. File saves use a temporary sibling followed by rename. These are hardening measures, not a complete security audit.
 
-A primary requirement of SharpForge is legal redistributability on macOS:
-- Microsoft's `vsdbg` debugger binaries and the C# Dev Kit contain proprietary licenses restricting use exclusively to official Microsoft products.
-- SharpForge integrates **`netcoredbg`**, Samsung's MIT-licensed, open-source debugger for .NET Core / CoreCLR.
-- Language intelligence is provided via standard open-source Roslyn LSP implementations (`csharp-ls` or OmniSharp).
-
----
-
-## Keyboard Shortcuts
-
-| Action | Shortcut |
-|---|---|
-| **Start / Continue Debugging** | `F5` |
-| **Toggle Breakpoint** | `F9` |
-| **Step Over** | `F10` |
-| **Step Into** | `F11` |
-| **Step Out** | `Shift + F11` |
-| **Stop Debugging** | `Shift + F5` |
-| **Build Solution** | `Cmd + Shift + B` |
-| **Run Startup Project** | `Cmd + R` |
-| **Quick Open File** | `Cmd + P` |
-| **Go to Definition** | `F12` or `Cmd + Click` |
-| **Find All References** | `Shift + F12` |
-| **Search Across Solution** | `Cmd + Shift + F` |
-
----
-
-## License
-
-MIT License. Designed and crafted for developers building modern .NET on macOS.
+SharpForge original code is MIT licensed; see [LICENSE](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md). A complete packaged dependency/artwork audit, trademark clearance, signing and notarization remain release requirements. See [release checks](docs/RELEASE_CHECKS.md).

@@ -16,7 +16,7 @@ const CURATED_EXTENSIONS: MarketplaceExtension[] = [
   {
     id: 'vscode:muhammad-sammy.csharp',
     name: 'csharp',
-    displayName: 'C# Dev Kit (Open VSX)',
+    displayName: 'C# (Open VSX; execution unsupported)',
     publisher: 'muhammad-sammy',
     version: '2.50.1',
     description: 'C# language editing, Razor syntax, symbol navigation & Roslyn diagnostics support.',
@@ -109,7 +109,7 @@ const CURATED_EXTENSIONS: MarketplaceExtension[] = [
     id: 'jetbrains:Roslynator',
     name: 'Roslynator',
     displayName: 'Roslynator Refactorings & Analyzers',
-    publisher: 'Josef Pihrt / JetBrains',
+    publisher: 'Josef Pihrt',
     version: '4.12.9',
     description: '500+ Roslyn analyzers, quick fixes & code refactorings for C# solutions.',
     source: 'jetbrains',
@@ -124,7 +124,7 @@ const CURATED_EXTENSIONS: MarketplaceExtension[] = [
     displayName: 'JetBrains Rider Keymap & Navigation',
     publisher: 'JetBrains',
     version: '2025.1',
-    description: 'Authentic Rider macOS keybindings (⌘B, ⌥⌘B, ⌥F7, ⌥F8, ⌥⌘←/→) for C# navigation.',
+    description: 'Rider-style macOS keybindings (⌘B, ⌥⌘B, ⌥F7, ⌥F8, ⌥⌘←/→) for C# navigation.',
     source: 'jetbrains',
     downloads: 920000,
     rating: 4.8,
@@ -265,6 +265,8 @@ export const ExtensionsPanel: React.FC<ExtensionsPanelProps> = ({
     try {
       await onInstallExtension(ext);
       setStatusNotice(`Installed ${ext.displayName}`);
+    } catch (error) {
+      setStatusNotice(error instanceof Error ? error.message : 'Theme import failed');
     } finally {
       setBusyId(null);
     }
@@ -277,7 +279,7 @@ export const ExtensionsPanel: React.FC<ExtensionsPanelProps> = ({
         <div className="flex items-center space-x-1.5">
           <Blocks className="w-3.5 h-3.5 text-purple-400" />
           <span className="uppercase text-[11px] text-[#868a91] font-bold">
-            Extensions & Plugins
+            Color themes
           </span>
         </div>
         <span className="text-[10px] bg-[#1e1f22] text-purple-300 border border-[#393b40] px-1.5 py-0.2 rounded">

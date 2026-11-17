@@ -1,3 +1,4 @@
+export interface TerminalSession { id: string; cwd: string; kind: 'shell' | 'claude'; title: string; exited: boolean; output: string; sequence: number; outputLength: number }
 // Ambient type definitions for Electron APIs to ensure seamless compilation
 // in web preview and desktop packaging workflows.
 import type { ActivePortProcess, MarketplaceExtension, RecentSolutionEntry, SolutionFile } from './minirider';
@@ -34,6 +35,14 @@ export interface DecompileDllResult {
 }
 
 export interface IElectronAPI {
+  fileHistory?: (file: string) => Promise<{ timestamp: string; content: string }[]>;
+  terminalList?: (cwd: string) => Promise<{ claudeAvailable: boolean; sessions: TerminalSession[] }>;
+  terminalCreate?: (options: { cwd: string; kind: 'shell' | 'claude' }) => Promise<TerminalSession>;
+  terminalWrite?: (id: string, data: string) => Promise<boolean>;
+  terminalResize?: (id: string, cols: number, rows: number) => Promise<void>;
+  terminalClose?: (id: string) => Promise<void>;
+  onTerminalEvent?: (callback: (event: { id: string; data: string; sequence: number; outputLength: number; exited?: boolean }) => void) => () => void;
+
   isElectron?: boolean;
   openSolutionDialog: () => Promise<SolutionFile | null>;
   openFolderDialog?: () => Promise<SolutionFile | null>;

@@ -2,7 +2,24 @@ const { app, BrowserWindow, dialog, shell, ipcMain, Menu } = require('electron')
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { exec } = require('child_process');
+const { exec, execFile } = require('child_process');
+const { isTrustedSender } = require('./desktop/security.cjs');
+// Every privileged operation must originate in this app's main frame.
+const registerHandler = ipcMain.handle.bind(ipcMain);
+const trustedDirectories = new Set();
+ipcMain.handle = (channel, handler) => registerHandler(channel, async (event, ...args) => {
+  if (!isTrustedSender(event, mainWindow, !app.isPackaged)) throw new Error('Untrusted IPC sender');
+  if (/^(dotnet:|debug:start|git:commit|terminal:create)/.test(channel)) {
+    const candidate = channel === 'terminal:create' ? args[0]?.cwd : channel === 'git:commit' ? args[0] : channel === 'debug:start' ? args[0]?.projectPath : typeof args[1] === 'string' ? args[1] : typeof args[0] === 'string' ? path.dirname(args[0]) : args[0]?.cwd;
+    const root = path.resolve(candidate || process.cwd());
+    if (!trustedDirectories.has(root)) {
+      const answer = await dialog.showMessageBox(mainWindow, { type: 'warning', buttons: ['Cancel', 'Trust for this session'], defaultId: 0, cancelId: 0, message: 'Allow project code and commands to execute?', detail: 'Builds, restores, tests and debugging can run code with your account permissions. Only continue for projects you trust.\n' + root });
+      if (answer.response !== 1) throw new Error('Execution cancelled: workspace is not trusted');
+      trustedDirectories.add(root);
+    }
+  }
+  return handler(event, ...args);
+});
 
 // =============================================================================
 // Centralized Logging System (saved live to ~/sharpforge-logs)
@@ -772,12 +789,15 @@ function createWindow() {
       preload: preloadPath,
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: false,
-      webSecurity: false
+      sandbox: true,
+      webSecurity: true
     },
     backgroundColor: '#1e1f22',
     show: false
   });
+
+  mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  mainWindow.webContents.on('will-navigate', event => event.preventDefault());
 
   // Renderer console message logger -> logs into ~/sharpforge-logs
   mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
@@ -806,7 +826,7 @@ function createWindow() {
     mainWindow.loadFile(indexPath).catch((err) => {
       logError(`Failed to load file: ${indexPath}`, err);
     });
-  } else {
+  } else if (!app.isPackaged) {
     logWarn('Falling back to local development server http://localhost:3000');
     mainWindow.loadURL('http://localhost:3000').catch((err) => {
       logError('Failed to load localhost:3000', err);
@@ -1410,7 +1430,8 @@ class DapDebugSession {
     const frame = `Content-Length: ${Buffer.byteLength(json, 'utf8')}\r\n\r\n${json}`;
 
     return new Promise((resolve, reject) => {
-      this.pending.set(seq, { resolve, reject, command });
+      const timer = setTimeout(() => { this.pending.delete(seq); reject(new Error(`Debugger request timed out: ${command}`)); }, 15000);
+      this.pending.set(seq, { resolve: value => { clearTimeout(timer); resolve(value); }, reject: error => { clearTimeout(timer); reject(error); }, command });
       try {
         this.proc.stdin.write(frame, 'utf8');
       } catch (err) {
@@ -1489,6 +1510,16 @@ class DapDebugSession {
   async handleStopped(body) {
     const threadId = body.threadId || this.currentThreadId || 1;
     this.currentThreadId = threadId;
+    if (body.reason === 'exception') {
+      try {
+        const info = await this.request('exceptionInfo', { threadId });
+        const type = info.details?.fullTypeName || info.exceptionId || 'System.Exception';
+        const message = info.details?.message || info.description || 'Debugger paused on exception';
+        this.sendToUi('debug:event', { event: 'output', category: 'stderr', output: `${type}: ${message}\n${info.details?.stackTrace || ''}\n` });
+      } catch (_) {
+        this.sendToUi('debug:event', { event: 'output', category: 'stderr', output: `System.Exception: ${body.text || body.description || 'Debugger paused on exception; adapter did not provide details'}\n` });
+      }
+    }
 
     let stackFrames = [];
     let variables = [];
@@ -1721,6 +1752,8 @@ class DapDebugSession {
 }
 
 function registerIpcHandlers() {
+  const history = require('./desktop/file-history.cjs').createFileHistory(path.join(app.getPath('userData'), 'file-history'));
+  ipcMain.handle('history:list', (_, file) => history.list(file));
   ipcMain.handle('dialog:open-solution', async () => {
     logInfo('IPC dialog:open-solution invoked');
     const result = await dialog.showOpenDialog(mainWindow, {
@@ -1801,7 +1834,7 @@ function registerIpcHandlers() {
     const cwd = path.dirname(slnPath);
     logInfo(`Running dotnet restore for ${slnPath}`);
     return new Promise((resolve) => {
-      exec(`dotnet restore "${slnPath}"`, { cwd, env, maxBuffer: 1024 * 1024 * 10 }, async (err, stdout, stderr) => {
+      execFile('dotnet', ['restore', slnPath], { cwd, env, maxBuffer: 1024 * 1024 * 10 }, async (err, stdout, stderr) => {
         try {
           const solution = await loadSolution(slnPath);
           resolve({
@@ -1828,7 +1861,12 @@ function registerIpcHandlers() {
       if (!filePath || !path.isAbsolute(filePath)) {
         return { success: false, error: 'Non-disk virtual file' };
       }
-      fs.writeFileSync(filePath, content, 'utf-8');
+      try { history.capture(filePath); } catch (error) { logWarn(`File history capture failed: ${error.message}`); }
+      const temporary = `${filePath}.sharpforge-${process.pid}.tmp`;
+      try {
+        fs.writeFileSync(temporary, content, { encoding: 'utf-8', mode: fs.statSync(filePath).mode });
+        fs.renameSync(temporary, filePath);
+      } finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }
       logInfo(`Saved file to disk: ${filePath}`);
       return { success: true };
     } catch (err) {
@@ -1937,8 +1975,8 @@ function registerIpcHandlers() {
     }
     const cwd = path.dirname(targetPath);
     return new Promise((resolve) => {
-      exec(
-        `dotnet build "${targetPath}" --no-restore --nologo -v:minimal`,
+      execFile(
+        'dotnet', ['build', targetPath, '--no-restore', '--nologo', '-v:minimal'],
         { cwd, env, maxBuffer: 1024 * 1024 * 8 },
         (err, stdout, stderr) => {
           resolve({
@@ -2581,7 +2619,7 @@ function registerIpcHandlers() {
   ipcMain.handle('git:diff', async (_, repoDir, filePath) => {
     const env = getEnhancedEnv();
     return new Promise((resolve) => {
-      exec(`git diff -- "${filePath}"`, { cwd: repoDir, env, maxBuffer: 1024 * 1024 * 5 }, (err, stdout) => {
+      execFile('git', ['diff', '--', filePath], { cwd: repoDir, env, maxBuffer: 1024 * 1024 * 5 }, (err, stdout) => {
         resolve({ success: !err, diff: stdout || '' });
       });
     });
@@ -2589,14 +2627,13 @@ function registerIpcHandlers() {
 
   ipcMain.handle('git:commit', async (_, repoDir, message, files) => {
     const env = getEnhancedEnv();
-    const safeMsg = String(message || '').replace(/"/g, '\\"');
-    const targets = files && files.length > 0 ? files.map(f => `"${f}"`).join(' ') : '-A';
-    const cmd = files && files.length > 0
-      ? `git add ${targets} && git commit -m "${safeMsg}"`
-      : `git add -A && git commit -m "${safeMsg}"`;
-    return new Promise((resolve) => {
-      exec(cmd, { cwd: repoDir, env }, (err, stdout, stderr) => {
-        resolve({ success: !err, stdout: stdout || '', stderr: stderr || '' });
+    const targets = Array.isArray(files) && files.length ? ['--', ...files] : ['-A'];
+    return new Promise(resolve => {
+      execFile('git', ['add', ...targets], { cwd: repoDir, env }, (addError, stdout, stderr) => {
+        if (addError) return resolve({ success: false, stdout, stderr });
+        execFile('git', ['commit', '-m', String(message || '')], { cwd: repoDir, env }, (err, stdout, stderr) => {
+          resolve({ success: !err, stdout: stdout || '', stderr: stderr || '' });
+        });
       });
     });
   });
@@ -3275,7 +3312,7 @@ catch (Exception ex)
   });
 
   ipcMain.handle('extensions:install', async (_, ext) => {
-    if (!ext || !ext.id) return { success: false, error: 'Invalid extension metadata' };
+    if (!ext || !ext.id || ext.source !== 'vscode') return { success: false, error: 'Only Open VSX color themes are supported' };
     const safeDirName = ext.id.replace(/[^a-zA-Z0-9._-]/g, '_');
     const extDir = path.join(EXTENSIONS_ROOT, safeDirName);
     fs.mkdirSync(extDir, { recursive: true });
@@ -3329,10 +3366,11 @@ catch (Exception ex)
           fs.writeFileSync(path.join(extDir, 'plugin.zip'), archiveBuf);
         }
       } catch (dlErr) {
-        logWarn(`Extension archive download/extract notice for ${ext.id}: ${dlErr.message}`);
+        return { success: false, error: `Theme import failed: ${dlErr.message}` };
       }
     }
 
+    if (!extractedThemes.length && !ext.themes?.length) return { success: false, error: 'This package does not contain a supported color theme. General extensions are not supported.' };
     const installedRecord = {
       ...ext,
       installed: true,
@@ -3371,6 +3409,7 @@ if (app) {
   app.whenReady().then(() => {
     logInfo('Electron App is ready.');
     registerIpcHandlers();
+    require('./desktop/terminals.cjs').registerTerminals({ ipcMain, app, getWindow: () => mainWindow, getEnv: getEnhancedEnv });
     createWindow();
 
     app.on('activate', () => {
