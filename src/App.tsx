@@ -3338,8 +3338,8 @@ echo "Built dist/SharpForge.app"
         onChange={handleBrowserFolderChange}
       />
 
-      <button className="absolute bottom-1 right-4 z-50 bg-[#34373d] text-blue-200 px-3 rounded" onClick={() => setWorkbenchOpen(true)}>Exceptions & tasks</button>
-      {workbenchOpen && <DeveloperWorkbench key={currentSolution.path} workspace={currentSolution.path} logs={[...terminalLogs.slice(-3000), ...debugLogs.slice(-3000)].join('\n')} onClose={() => setWorkbenchOpen(false)} onNavigate={(file, line) => openFileAtLocation(file, line, 1)} onBuild={handleBuild} onRun={() => handleRun()} onDebug={() => handleDebug()} onFailedTests={handleRunFailedTests} onCommand={handleExecuteTerminalCommand} />}
+      <button className="absolute bottom-1 right-4 z-50 bg-[#34373d] text-blue-200 px-3 rounded" onClick={() => setWorkbenchOpen(true)}>Developer workbench</button>
+      {workbenchOpen && <DeveloperWorkbench key={currentSolution.path} workspace={currentSolution.path} solution={currentSolution} activeFile={activeFile || undefined} logs={[...terminalLogs.slice(-3000), ...debugLogs.slice(-3000)].join('\n')} onClose={() => setWorkbenchOpen(false)} onNavigate={(file, line) => openFileAtLocation(file, line, 1)} onBuild={handleBuild} onRun={() => handleRun()} onDebug={() => handleDebug()} onFailedTests={handleRunFailedTests} onCommand={handleExecuteTerminalCommand} />}
       {/* Top Application Toolbar */}
       <Toolbar
         solutions={solutions}

@@ -35,6 +35,7 @@ export interface DecompileDllResult {
 }
 
 export interface IElectronAPI {
+  fileHistory?: (file: string) => Promise<{ timestamp: string; content: string }[]>;
   terminalList?: (cwd: string) => Promise<{ claudeAvailable: boolean; sessions: TerminalSession[] }>;
   terminalCreate?: (options: { cwd: string; kind: 'shell' | 'claude' }) => Promise<TerminalSession>;
   terminalWrite?: (id: string, data: string) => Promise<boolean>;

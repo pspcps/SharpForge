@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   isElectron: true,
+  fileHistory: file => ipcRenderer.invoke('history:list', file),
   terminalList: cwd => ipcRenderer.invoke('terminal:list', cwd),
   terminalCreate: options => ipcRenderer.invoke('terminal:create', options),
   terminalWrite: (id, data) => ipcRenderer.invoke('terminal:write', id, data),

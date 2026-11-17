@@ -1752,6 +1752,8 @@ class DapDebugSession {
 }
 
 function registerIpcHandlers() {
+  const history = require('./desktop/file-history.cjs').createFileHistory(path.join(app.getPath('userData'), 'file-history'));
+  ipcMain.handle('history:list', (_, file) => history.list(file));
   ipcMain.handle('dialog:open-solution', async () => {
     logInfo('IPC dialog:open-solution invoked');
     const result = await dialog.showOpenDialog(mainWindow, {
@@ -1859,6 +1861,7 @@ function registerIpcHandlers() {
       if (!filePath || !path.isAbsolute(filePath)) {
         return { success: false, error: 'Non-disk virtual file' };
       }
+      try { history.capture(filePath); } catch (error) { logWarn(`File history capture failed: ${error.message}`); }
       const temporary = `${filePath}.sharpforge-${process.pid}.tmp`;
       try {
         fs.writeFileSync(temporary, content, { encoding: 'utf-8', mode: fs.statSync(filePath).mode });
