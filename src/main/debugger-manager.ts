@@ -74,7 +74,7 @@ export class DebuggerManager extends EventEmitter {
     // 1. Initialize DAP handshake
     await this.sendRequest('initialize', {
       clientID: 'sharpforge-macos',
-      clientName: 'SharpForge IDE',
+      clientName: 'Cairn IDE',
       adapterID: 'coreclr',
       pathFormat: 'path',
       linesStartAt1: true,

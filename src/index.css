@@ -10,7 +10,7 @@
   -webkit-app-region: no-drag;
 }
 
-/* SharpForge Monaco Editor Breakpoint & Paused Line Styling */
+/* Cairn IDE Monaco Editor Breakpoint & Paused Line Styling */
 .sharpforge-breakpoint-glyph {
   background: #e51400;
   border-radius: 50%;
@@ -79,7 +79,7 @@
   background: #4e5157;
 }
 
-/* Ensure default Monaco context menu widget is hidden so only SharpForge menu shows */
+/* Ensure default Monaco context menu widget is hidden so only Cairn IDE menu shows */
 .context-view.monaco-menu-container {
   display: none !important;
 }

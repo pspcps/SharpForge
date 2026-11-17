@@ -1,6 +1,6 @@
 {
-  "name": "MiniRider — Lightweight .NET IDE for macOS",
-  "description": "A lightweight macOS desktop alternative to JetBrains Rider for C# and .NET development with real Solution Explorer, Roslyn LSP, DAP debugger, test runner, and setup scripts.",
+  "name": "Cairn IDE — Lightweight .NET IDE for macOS",
+  "description": "A lightweight macOS desktop IDE for C# and .NET development with solution navigation, DAP debugging, tests, local workspace tools and interactive terminals.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

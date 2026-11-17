@@ -2,6 +2,7 @@ const { app, BrowserWindow, dialog, shell, ipcMain, Menu } = require('electron')
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+if (app) require('./desktop/branding.cjs').applyBranding(app);
 const { exec, execFile } = require('child_process');
 const { isTrustedSender } = require('./desktop/security.cjs');
 // Every privileged operation must originate in this app's main frame.
@@ -48,20 +49,20 @@ function writeLog(filePath, level, message) {
 }
 
 function logInfo(msg) {
-  console.log(`[SharpForge] ${msg}`);
+  console.log(`[Cairn IDE] ${msg}`);
   writeLog(APP_LOG, 'INFO', msg);
   writeLog(ELECTRON_LOG, 'INFO', msg);
 }
 
 function logWarn(msg) {
-  console.warn(`[SharpForge WARN] ${msg}`);
+  console.warn(`[Cairn IDE WARN] ${msg}`);
   writeLog(APP_LOG, 'WARN', msg);
   writeLog(ELECTRON_LOG, 'WARN', msg);
 }
 
 function logError(msg, err) {
   const errMsg = err ? `${msg}\n${err.stack || err}` : msg;
-  console.error(`[SharpForge ERROR] ${errMsg}`);
+  console.error(`[Cairn IDE ERROR] ${errMsg}`);
   writeLog(APP_LOG, 'ERROR', errMsg);
   writeLog(ERROR_LOG, 'ERROR', errMsg);
 }
@@ -124,7 +125,7 @@ function getEnhancedEnv() {
   };
 }
 
-logInfo(`=== SharpForge Starting (PID: ${process.pid}, Node: ${process.version}, Platform: ${process.platform}) ===`);
+logInfo(`=== Cairn IDE Starting (PID: ${process.pid}, Node: ${process.version}, Platform: ${process.platform}) ===`);
 
 // Trap global unhandled exceptions
 process.on('uncaughtException', (err) => {
@@ -781,7 +782,7 @@ function createWindow() {
     height: 900,
     minWidth: 1024,
     minHeight: 700,
-    title: 'SharpForge — Lightweight .NET IDE',
+    title: 'Cairn IDE — Lightweight .NET IDE',
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 16, y: 14 },
     icon: hasIcon ? iconPath : undefined,
@@ -845,7 +846,7 @@ function setupMenu() {
   const isMac = process.platform === 'darwin';
   const template = [
     ...(isMac ? [{
-      label: 'SharpForge',
+      label: 'Cairn IDE',
       submenu: [
         { role: 'about' },
         { type: 'separator' },
@@ -2478,7 +2479,7 @@ function registerIpcHandlers() {
       session.start();
       await session.request('initialize', {
         clientID: 'sharpforge',
-        clientName: 'SharpForge',
+        clientName: 'Cairn IDE',
         adapterID: 'coreclr',
         linesStartAt1: true,
         columnsStartAt1: true,
@@ -2865,7 +2866,7 @@ try
     var sb = new StringBuilder();
     sb.AppendLine($"// Decompiled assembly metadata: {asm.GetName().Name} v{asm.GetName().Version}");
     sb.AppendLine($"// Location: {dllPath}");
-    sb.AppendLine($"// Install ilspycmd in SharpForge to view full decompiled C# method bodies.");
+    sb.AppendLine($"// Install ilspycmd in Cairn IDE to view full decompiled C# method bodies.");
     sb.AppendLine();
 
     var selected = allTypes
@@ -3206,7 +3207,7 @@ catch (Exception ex)
       if (redirects > 5) return reject(new Error('Too many redirects'));
       const req = https.get(
         url,
-        { headers: { 'User-Agent': 'SharpForge-IDE/1.0' }, timeout: 12000 },
+        { headers: { 'User-Agent': 'Cairn IDE-IDE/1.0' }, timeout: 12000 },
         (res) => {
           if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
             return resolve(httpGetBuffer(res.headers.location, redirects + 1));

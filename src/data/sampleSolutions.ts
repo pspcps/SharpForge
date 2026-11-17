@@ -199,7 +199,7 @@ public class WeatherForecastController : ControllerBase
     "DefaultConnection": "Server=localhost;Database=WeatherTrackerDev;User Id=sa;Password=Secret123!;"
   },
   "JwtSettings": {
-    "Secret": "SuperSecretKeyForSharpForgeDevEnvironment2026!",
+    "Secret": "SuperSecretKeyForCairn IDEDevEnvironment2026!",
     "Issuer": "WeatherTrackerApi",
     "Audience": "WeatherTrackerClients"
   },

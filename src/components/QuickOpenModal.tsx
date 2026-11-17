@@ -80,7 +80,7 @@ export const QuickOpenModal: React.FC<QuickOpenModalProps> = ({
           <input
             ref={inputRef}
             type="text"
-            placeholder="Type a file name to open in SharpForge (e.g. UsersController.cs, Program.cs)..."
+            placeholder="Type a file name to open in Cairn IDE (e.g. UsersController.cs, Program.cs)..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);

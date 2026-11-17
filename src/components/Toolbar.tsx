@@ -179,11 +179,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </button>
         </div>
 
-        {/* SharpForge Brand */}
+        {/* Cairn IDE Brand */}
         <div className="flex items-center space-x-1.5 pl-1 border-l border-[#393b40] shrink-0">
-          <img src="./icon.png" alt="SharpForge" className="w-5 h-5 rounded object-cover" />
+          <img src="./icon.png" alt="Cairn IDE" className="w-5 h-5 rounded object-cover" />
           <span className="hidden sm:inline font-semibold tracking-tight text-[#dfe1e5] whitespace-nowrap">
-            SharpForge
+            Cairn IDE
           </span>
         </div>
 
@@ -268,7 +268,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                   <div className="max-h-72 overflow-y-auto divide-y divide-[#2f3136]">
                     {recentSolutions.length === 0 ? (
                       <div className="p-4 text-center text-gray-500 text-[11px] italic">
-                        No recent `.sln` projects recorded yet. Open a solution or folder and SharpForge will remember it automatically.
+                        No recent `.sln` projects recorded yet. Open a solution or folder and Cairn IDE will remember it automatically.
                       </div>
                     ) : (
                       recentSolutions.map((entry) => {
@@ -564,7 +564,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <button
           onClick={onOpenSettings}
           className="p-1.5 hover:bg-[#35373c] text-[#bcbec4] hover:text-white rounded transition"
-          title="SharpForge IDE Settings"
+          title="Cairn IDE Settings"
         >
           <SettingsIcon className="w-4 h-4" />
         </button>

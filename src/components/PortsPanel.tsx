@@ -209,7 +209,7 @@ export const PortsPanel: React.FC<PortsPanelProps> = ({
         <div className="px-3 py-2 bg-amber-500/10 border-b border-amber-500/25 text-amber-200 text-[11px] flex items-center space-x-2 shrink-0">
           <Terminal className="w-3.5 h-3.5 text-amber-400 shrink-0" />
           <span>
-            Live macOS port scanning (`lsof`) and process killing require the SharpForge.app desktop runtime. Build via `./setup.sh` to manage live OS ports.
+            Live macOS port scanning (`lsof`) and process killing require the Cairn IDE.app desktop runtime. Build via `./setup.sh` to manage live OS ports.
           </span>
         </div>
       )}

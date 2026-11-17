@@ -15,6 +15,7 @@ try {
 }
 
 const app = electron?.app;
+if (app) require('../../desktop/branding.cjs').applyBranding(app);
 const BrowserWindow = electron?.BrowserWindow;
 const dialog = electron?.dialog;
 const shell = electron?.shell;
@@ -36,7 +37,7 @@ function createWindow() {
     height: 900,
     minWidth: 1024,
     minHeight: 700,
-    title: 'SharpForge',
+    title: 'Cairn IDE',
     titleBarStyle: 'hiddenInset', // macOS native traffic light titlebar
     trafficLightPosition: { x: 16, y: 14 },
     webPreferences: {
@@ -62,7 +63,7 @@ function setupMenu() {
   if (!Menu) return;
   const template = [
     {
-      label: 'SharpForge',
+      label: 'Cairn IDE',
       submenu: [
         { role: 'about' },
         { type: 'separator' },

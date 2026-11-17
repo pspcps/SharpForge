@@ -393,7 +393,7 @@ export const PortConfigModal: React.FC<PortConfigModalProps> = ({
         {/* Footer Actions */}
         <div className="px-4 py-3 bg-[#2b2d30] border-t border-[#393b40] flex flex-wrap items-center justify-between gap-2 shrink-0">
           <div className="text-[11px] text-gray-400">
-            SharpForge injects <code className="text-slate-300">ASPNETCORE_URLS</code> & <code className="text-slate-300">PORT</code> on Run and Debug.
+            Cairn IDE injects <code className="text-slate-300">ASPNETCORE_URLS</code> & <code className="text-slate-300">PORT</code> on Run and Debug.
           </div>
 
           <div className="flex items-center space-x-2">

@@ -12,7 +12,6 @@ import {
   Layers,
   ExternalLink
 } from 'lucide-react';
-import JSZip from 'jszip';
 
 interface SetupModalProps {
   isOpen: boolean;
@@ -26,7 +25,6 @@ export const SetupModal: React.FC<SetupModalProps> = ({
   setupScriptContent
 }) => {
   const [copied, setCopied] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
   const [activeTab, setActiveTab] = useState<'quickstart' | 'script' | 'architecture'>('quickstart');
 
   if (!isOpen) return null;
@@ -49,120 +47,12 @@ export const SetupModal: React.FC<SetupModalProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  const handleDownloadZip = async () => {
-    setIsExporting(true);
-    try {
-      const zip = new JSZip();
-      zip.file('setup.sh', setupScriptContent);
-      zip.file('electron-main.cjs', `const { app, BrowserWindow, dialog, shell, ipcMain, Menu } = require('electron');
-const path = require('path');
-const fs = require('fs');
-
-let mainWindow = null;
-function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1440,
-    height: 900,
-    minWidth: 1024,
-    minHeight: 700,
-    title: 'SharpForge — Lightweight .NET IDE',
-    titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 16, y: 14 },
-    icon: path.join(__dirname, 'resources', 'icon.png'),
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true
-    },
-    backgroundColor: '#1e1f22'
-  });
-
-  const distPath = path.join(__dirname, 'dist', 'index.html');
-  if (fs.existsSync(distPath)) {
-    mainWindow.loadFile(distPath);
-  } else {
-    mainWindow.loadURL('http://localhost:3000');
-  }
-}
-
-if (app) {
-  app.whenReady().then(createWindow);
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-  app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
-  });
-}
-`);
-      zip.file('electron-builder.yml', `appId: org.sharpforge.ide
-productName: SharpForge
-copyright: Copyright © 2026 SharpForge Contributors
-directories:
-  output: dist
-  buildResources: resources
-mac:
-  category: public.app-category.developer-tools
-  icon: resources/icon.png
-  hardenedRuntime: false
-  identity: null
-files:
-  - dist/**/*
-  - electron-main.cjs
-  - bin/netcoredbg/**/*
-  - resources/icon.png
-  - package.json
-`);
-      zip.file('package.json', JSON.stringify({
-        name: "sharpforge",
-        private: true,
-        version: "1.0.0",
-        type: "module",
-        main: "electron-main.cjs",
-        scripts: {
-          dev: "vite --port=3000 --host=0.0.0.0",
-          build: "vite build",
-          lint: "tsc --noEmit",
-          "electron:dev": "npx --yes electron electron-main.cjs"
-        },
-        dependencies: {
-          "@monaco-editor/react": "^4.7.0",
-          "@tailwindcss/vite": "^4.3.3",
-          "@vitejs/plugin-react": "^6.1.1",
-          "dotenv": "^17.2.3",
-          "express": "^4.21.2",
-          "jszip": "^3.10.2",
-          "lucide-react": "^0.546.0",
-          "motion": "^12.23.24",
-          "react": "^19.0.1",
-          "react-dom": "^19.0.1",
-          "vite": "^8.3.0"
-        },
-        devDependencies: {
-          "@types/node": "^22.14.0",
-          "@types/react": "^19.3.0",
-          "@types/react-dom": "^19.3.0",
-          "autoprefixer": "^10.4.21",
-          "tailwindcss": "^4.3.3",
-          "tsx": "^4.21.0",
-          "typescript": "^7.0.2"
-        }
-      }, null, 2));
-      zip.file('README.md', `# SharpForge — Lightweight .NET IDE for macOS\n\nRun this single script directly on your Mac:\n\`\`\`bash\nchmod +x setup.sh\n./setup.sh\n\`\`\`\n\nAll compiled application files are created in the dist folder:\n- dist/SharpForge.app\n- dist/SharpForge-*.dmg\n`);
-      
-      const content = await zip.generateAsync({ type: 'blob' });
-      const url = URL.createObjectURL(content);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'sharpforge-macos-project.zip';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Failed to export zip:', err);
-    } finally {
-      setIsExporting(false);
-    }
+  const handleDownloadZip = () => {
+    // Download the real repository, including its lockfile, desktop modules and assets.
+    const link = document.createElement('a');
+    link.href = 'https://github.com/pspcps/SharpForge/archive/refs/heads/main.zip';
+    link.rel = 'noopener noreferrer';
+    link.click();
   };
 
   return (
@@ -171,8 +61,8 @@ files:
         {/* Header */}
         <div className="h-12 bg-[#26282b] border-b border-[#2b2d30] px-4 flex items-center justify-between rounded-t-xl">
           <div className="flex items-center space-x-2">
-            <img src="./icon.png" alt="SharpForge" className="w-6 h-6 rounded shadow object-cover" />
-            <span className="font-bold text-sm">SharpForge macOS Desktop App Setup & Packaging</span>
+            <img src="./icon.png" alt="Cairn IDE" className="w-6 h-6 rounded shadow object-cover" />
+            <span className="font-bold text-sm">Cairn IDE macOS Desktop App Setup & Packaging</span>
           </div>
           <button
             onClick={onClose}
@@ -220,7 +110,7 @@ files:
                   <span>One-Command macOS Installation</span>
                 </h4>
                 <p className="text-gray-300 text-xs">
-                  Run the automated setup script on your Mac. It detects Apple Silicon (M1/M2/M3/M4) vs Intel (x64), checks prerequisites, configures the open-source DAP debugger (<code className="text-amber-300 font-mono">netcoredbg</code>), compiles the desktop app, and packages <code className="text-emerald-300 font-mono">SharpForge.app</code> directly into your <code className="text-emerald-300 font-mono">/Applications</code> folder.
+                  Run the automated setup script on your Mac. It detects Apple Silicon (M1/M2/M3/M4) vs Intel (x64), checks prerequisites, checks for the open-source DAP debugger (<code className="text-amber-300 font-mono">netcoredbg</code>), compiles the desktop app, and packages <code className="text-emerald-300 font-mono">Cairn IDE.app</code> into the <code className="text-emerald-300 font-mono">release/</code> folder.
                 </p>
 
                 <div className="relative mt-2">
@@ -278,11 +168,11 @@ chmod +x setup.sh
 
                 <button
                   onClick={handleDownloadZip}
-                  disabled={isExporting}
+                  disabled={false}
                   className="flex items-center space-x-1.5 px-3 py-2 bg-[#2b2d30] hover:bg-[#35373c] text-white border border-[#393b40] rounded font-medium transition"
                 >
                   <FileCode className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{isExporting ? 'Packaging Zip...' : 'Download SharpForge Package (.zip)'}</span>
+                  <span>Download repository source (.zip)</span>
                 </button>
               </div>
             </div>
@@ -317,7 +207,7 @@ chmod +x setup.sh
                   Microsoft&apos;s proprietary <code className="text-red-300 font-mono">vsdbg</code> debugger and C# Dev Kit have commercial license restrictions preventing redistribution in third-party IDEs.
                 </p>
                 <p className="text-gray-300 text-xs">
-                  SharpForge strictly uses <strong className="text-slate-100">netcoredbg</strong> (developed by Samsung and licensed under the permissive <strong className="text-emerald-300">MIT License</strong>), ensuring complete legal redistribution for everyday .NET development on macOS.
+                  Cairn IDE strictly uses <strong className="text-slate-100">netcoredbg</strong> (developed by Samsung and licensed under the permissive <strong className="text-emerald-300">MIT License</strong>), with redistribution subject to its license and applicable third-party notices.
                 </p>
               </div>
 
@@ -337,7 +227,7 @@ chmod +x setup.sh
 
         {/* Footer */}
         <div className="h-11 bg-[#26282b] border-t border-[#2b2d30] px-4 flex items-center justify-between rounded-b-xl text-gray-400 text-xs">
-          <span>SharpForge v1.0.0 for macOS Sonoma / Sequoia</span>
+          <span>Cairn IDE v1.0.0 for macOS Sonoma / Sequoia</span>
           <button
             onClick={onClose}
             className="px-3 py-1 bg-[#3574f0] hover:bg-[#3068d8] text-white rounded font-medium transition"
