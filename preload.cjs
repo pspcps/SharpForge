@@ -2,6 +2,16 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   isElectron: true,
+  terminalList: cwd => ipcRenderer.invoke('terminal:list', cwd),
+  terminalCreate: options => ipcRenderer.invoke('terminal:create', options),
+  terminalWrite: (id, data) => ipcRenderer.invoke('terminal:write', id, data),
+  terminalResize: (id, cols, rows) => ipcRenderer.invoke('terminal:resize', id, cols, rows),
+  terminalClose: id => ipcRenderer.invoke('terminal:close', id),
+  onTerminalEvent: callback => {
+    const handler = (_, data) => callback(data);
+    ipcRenderer.on('terminal:event', handler);
+    return () => ipcRenderer.removeListener('terminal:event', handler);
+  },
   openSolutionDialog: () => ipcRenderer.invoke('dialog:open-solution'),
   openFolderDialog: () => ipcRenderer.invoke('dialog:open-folder'),
   loadSolution: (filePath) => ipcRenderer.invoke('solution:load-from-path', filePath),

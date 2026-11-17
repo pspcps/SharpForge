@@ -38,7 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="w-12 bg-[#1e1f22] border-r border-[#2b2d30] flex flex-col justify-between py-2 select-none z-10">
+    <aside className="w-12 shrink-0 overflow-y-auto overflow-x-hidden bg-[#1e1f22] border-r border-[#2b2d30] flex flex-col justify-between py-2 select-none z-10">
       <div className="flex flex-col items-center space-y-1">
         {navItems.map(item => {
           const Icon = item.icon;
@@ -47,19 +47,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               key={item.id}
               onClick={() => onSelectTab(item.id)}
-              className={`relative w-9 h-9 flex items-center justify-center rounded-md transition group ${
+              className={`relative w-9 h-10 shrink-0 flex items-center justify-center rounded-md transition group ${
                 isActive
                   ? 'bg-[#3574f0] text-white shadow-sm'
                   : 'text-[#868a91] hover:text-[#dfe1e5] hover:bg-[#2b2d30]'
               }`}
-              title={item.label}
+              title={item.badge ? `${item.label} (${item.badge})` : item.label}
+              aria-label={item.badge ? `${item.label} (${item.badge})` : item.label}
             >
               <Icon className="w-4 h-4" />
               {item.badge !== undefined && item.badge > 0 && (
-                <span className={`absolute -top-1 -right-1 text-[9px] px-1 rounded-full font-bold ${
+                <span className={`absolute top-0 right-0 leading-3 max-w-7 truncate text-[9px] px-1 rounded-full font-bold ${
                   isActive ? 'bg-white text-[#3574f0]' : 'bg-[#3574f0] text-white'
                 }`}>
-                  {item.badge}
+                  {item.badge > 99 ? '99+' : item.badge}
                 </span>
               )}
             </button>

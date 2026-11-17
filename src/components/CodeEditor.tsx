@@ -1,5 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-import Editor, { OnMount } from '@monaco-editor/react';
+import Editor, { OnMount, loader } from '@monaco-editor/react';
+import * as monacoEditor from 'monaco-editor/editor/editor.api.js';
+import 'monaco-editor/basic-languages/monaco.contribution.js';
+import EditorWorker from 'monaco-editor/editor/editor.worker.js?worker';
+// Bundle editor assets locally: opening source files must work without a CDN.
+(self as any).MonacoEnvironment = { getWorker: () => new EditorWorker() };
+loader.config({ monaco: monacoEditor });
 import {
   X,
   FolderSync,
